@@ -1,10 +1,13 @@
 package com.neteye.utils.support;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class IpAddress {
-    private int firstOctet;
-    private int secondOctet;
-    private int thirdOctet;
-    private int fourthOctet;
+    private final int firstOctet;
+    private final int secondOctet;
+    private final int thirdOctet;
+    private final int fourthOctet;
 
     public IpAddress(int first, int second, int third, int fourth) {
         this.firstOctet = first;
@@ -49,6 +52,14 @@ public class IpAddress {
 
     public boolean isLesser(IpAddress ip) {
         return !(equals(ip) || isGreater(ip));
+    }
+
+    public InetAddress getIP() {
+        try {
+            return InetAddress.getByName(this.toString());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
