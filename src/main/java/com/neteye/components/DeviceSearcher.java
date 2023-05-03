@@ -1,11 +1,20 @@
 package com.neteye.components;
 
+import com.neteye.persistence.repositories.DeviceRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class DeviceSearcher {
+
+    private final DeviceRepository deviceRepository;
+
+    public DeviceSearcher(DeviceRepository deviceRepository) {
+        this.deviceRepository = deviceRepository;
+    }
 
     public void search(String... range) {
         AtomicInteger[] ip = new AtomicInteger[4];
@@ -26,6 +35,12 @@ public class DeviceSearcher {
             catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+    }
+    public void scan() {
+        for(int i = 0; i < 4; i++) {
+
         }
     }
 }
