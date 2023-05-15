@@ -1,6 +1,6 @@
 package com.neteye.utils.enums;
 
-public enum PORTNUMBERS {
+public enum PortNumbersEnum {
     FTP(21),
     SSH(22),
     TELNET(23),
@@ -15,7 +15,7 @@ public enum PORTNUMBERS {
     MYSQL(3306),
     POSTGRESQL(5432);
     private final int value;
-    PORTNUMBERS(final int newValue) {
+    PortNumbersEnum(final int newValue) {
         value = newValue;
     }
     public int getValue() {

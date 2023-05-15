@@ -1,9 +1,8 @@
 package com.neteye.persistence.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
-
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 

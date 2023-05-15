@@ -1,47 +1,68 @@
 package com.neteye.components;
 
 import com.neteye.persistence.repositories.DeviceRepository;
+import com.neteye.utils.IpAddress;
+import com.neteye.utils.enums.PortNumbersEnum;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
+import static com.neteye.NetEyeApplication.logger;
 
 @Component
 public class DeviceSearcher {
 
     private final DeviceRepository deviceRepository;
-
+    private AtomicIntegerArray ip = new AtomicIntegerArray(4);
+    private IpAddress lastAddress = new IpAddress("224.0.0.0");
+    @Autowired
     public DeviceSearcher(DeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;
     }
 
     public void search(String... range) {
-        AtomicInteger[] ip = new AtomicInteger[4];
-        ip[0].set(1);
-        ip[1].set(0);
-        ip[2].set(0);
-        ip[3].set(0);
-        String lastAddress = "224.0.0.0";
+        ip.set(0,1);
+        ip.set(1,0);
+        ip.set(2,0);
+        ip.set(3,0);
         if(range.length > 0) {
-            String[] startingIp = range[0].split("\\.");
-            lastAddress = range[1];
-            int tmp = 0;
-            try {
-                for(String octet : startingIp) {
-                    ip[tmp++].set(Integer.parseInt(octet));
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+            ip = new IpAddress(range[0]).getAtomicIntegerArrayIP();
+            lastAddress = new IpAddress(range[1]);
         }
 
     }
     public void scan() {
-        for(int i = 0; i < 4; i++) {
+        IpAddress currentIp = new IpAddress();
+        InetAddress inetAddress;
+        Socket socket;
+        while (new IpAddress(ip).isGreater(lastAddress)) {
+            synchronized (this) {
+                ip = new IpAddress(ip).increment().getAtomicIntegerArrayIP();
+                currentIp.setAddress(ip);
+            }
+            try {
+                inetAddress = currentIp.getIP();
+                if(inetAddress.isReachable(500)) {
+                    for (PortNumbersEnum portNumber : PortNumbersEnum.values()) {
+                        try {
+                            socket = new Socket();
+                            socket.connect(new InetSocketAddress(inetAddress, portNumber.getValue()), 200);
+                            if(socket.isConnected()) {
 
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                return;
+            }
         }
     }
-
 }

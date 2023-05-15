@@ -1,8 +1,8 @@
 package com.neteye.utils.enums;
 
-import com.neteye.utils.support.IpAddress;
+import com.neteye.utils.IpAddress;
 
-public enum RESTRICTEDADDRESSES {
+public enum RestrictedAddressesEnum {
     POOL1(new IpAddress(10,0,0,0), new IpAddress(10,255,255,255)),
     POOL2(new IpAddress(100,64,0,0), new IpAddress(100,127,255,255)),
     POOL3(new IpAddress(127,0,0,0), new IpAddress(127,255,255,255)),
@@ -17,7 +17,7 @@ public enum RESTRICTEDADDRESSES {
 
     private final IpAddress startingAddress;
     private final IpAddress endingAddress;
-    RESTRICTEDADDRESSES(IpAddress startingAddress, IpAddress endingAddress) {
+    RestrictedAddressesEnum(IpAddress startingAddress, IpAddress endingAddress) {
         this.startingAddress = startingAddress;
         this.endingAddress = endingAddress;
     }
