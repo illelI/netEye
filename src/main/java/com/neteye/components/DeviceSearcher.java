@@ -1,6 +1,7 @@
 package com.neteye.components;
 
 import com.neteye.persistence.repositories.DeviceRepository;
+import com.neteye.utils.Identify;
 import com.neteye.utils.IpAddress;
 import com.neteye.utils.enums.PortNumbersEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,26 +35,29 @@ public class DeviceSearcher {
             ip = new IpAddress(range[0]).getAtomicIntegerArrayIP();
             lastAddress = new IpAddress(range[1]);
         }
-
+        logger.info("Stated scanning with ip " + ip.get(0) + "." + ip.get(1) + "." + ip.get(2) + "." + ip.get(3));
+        scan();
+        logger.info("Ended scanning");
     }
     public void scan() {
         IpAddress currentIp = new IpAddress();
         InetAddress inetAddress;
         Socket socket;
-        while (new IpAddress(ip).isGreater(lastAddress)) {
+        while (new IpAddress(ip).isLesser(lastAddress)) {
             synchronized (this) {
                 ip = new IpAddress(ip).increment().getAtomicIntegerArrayIP();
                 currentIp.setAddress(ip);
             }
             try {
                 inetAddress = currentIp.getIP();
+                logger.info(inetAddress.getHostAddress());
                 if(inetAddress.isReachable(500)) {
                     for (PortNumbersEnum portNumber : PortNumbersEnum.values()) {
                         try {
                             socket = new Socket();
-                            socket.connect(new InetSocketAddress(inetAddress, portNumber.getValue()), 200);
+                            socket.connect(new InetSocketAddress(inetAddress, portNumber.getValue()), 500);
                             if(socket.isConnected()) {
-
+                                Identify.fetchInfo(portNumber, currentIp);
                             }
                         } catch (Exception e) {
                         }
@@ -61,7 +65,7 @@ public class DeviceSearcher {
                 }
             }
             catch (Exception e) {
-                return;
+                logger.info(e.getMessage());
             }
         }
     }

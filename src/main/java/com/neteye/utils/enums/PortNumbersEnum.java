@@ -11,9 +11,7 @@ public enum PortNumbersEnum {
     HTTPS(443),
     POP3(110),
     IMAP(143),
-    SNTP(161),
-    MYSQL(3306),
-    POSTGRESQL(5432);
+    SNMP(161);
     private final int value;
     PortNumbersEnum(final int newValue) {
         value = newValue;

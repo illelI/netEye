@@ -51,7 +51,7 @@ public class IpAddress {
             if(this.address[0] != tmp.address[0]) return false;
             if(this.address[1] != tmp.address[1]) return false;
             if(this.address[2] != tmp.address[2]) return false;
-            return this.address[4] == tmp.address[4];
+            return this.address[3] == tmp.address[3];
         }
         catch (Exception e) {
             e.printStackTrace();
