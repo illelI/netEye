@@ -56,6 +56,7 @@ public class DeviceSearcher {
                         try {
                             socket = new Socket();
                             socket.connect(new InetSocketAddress(inetAddress, portNumber.getValue()), 500);
+                            logger.info(portNumber.getValue());
                             if(socket.isConnected()) {
                                 Identify.fetchInfo(portNumber, currentIp);
                             }

@@ -8,6 +8,7 @@ import org.apache.commons.net.smtp.SMTPClient;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Map;
 
@@ -124,9 +125,9 @@ public class Identify {
                     message.append(entry.getKey()).append(": ").append(entry.getValue().get(0)).append("\n");
                 }
             }
+            logger.info(message);
             return message.toString();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error(e.getMessage());
         }
         return "";
