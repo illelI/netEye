@@ -1,5 +1,7 @@
 package com.neteye.persistence.dto;
 
+import com.neteye.utils.annotations.PasswordConfirmation;
+import com.neteye.utils.annotations.ValidEmail;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@PasswordConfirmation
 public class UserDto {
     @NotNull
     @NotEmpty
@@ -29,6 +32,7 @@ public class UserDto {
 
     @NotNull
     @NotEmpty
+    @ValidEmail
     @Getter @Setter
     private String email;
 }
