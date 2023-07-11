@@ -1,27 +1,45 @@
 package com.neteye.persistence.entities;
 
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.springframework.data.cassandra.core.mapping.Indexed;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "Device")
+@Table
 public class Device {
-    @Id
-    @Pattern(regexp = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$")
+    @PrimaryKey
+    private UUID id;
+
+    @Indexed
     @Getter
     @Setter
     private String ip;
 
-    @OneToMany
-    private List<Port> openPorts = new ArrayList<>();
+    @Getter
+    @Setter
+    private int portNumber;
 
-    public void addOpenPort(Port port) {
-        openPorts.add(port);
+    @Getter
+    @Setter
+    private String info;
+
+    public Device() {
+        this.id = Uuids.timeBased();
+    }
+
+
+    public Device(String ip, int portNumber, String info) {
+        this.id = Uuids.timeBased();
+        this.ip = ip;
+        this.portNumber = portNumber;
+        this.info = info;
     }
 }

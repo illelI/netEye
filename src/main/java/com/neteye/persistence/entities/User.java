@@ -1,29 +1,50 @@
 package com.neteye.persistence.entities;
 
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.neteye.utils.enums.AccountType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.cassandra.core.mapping.Indexed;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.UUID;
+
+
+@Table
 public class User {
-    @Id
+    @PrimaryKey
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter @Setter
-    private Long id;
+    private UUID id;
     @Getter @Setter
     private String firstName;
     @Getter @Setter
     private String lastName;
-    @Column(unique = true)
+    @Indexed
     @Getter @Setter
     private String email;
     @Getter @Setter
     private String password;
     @Getter @Setter
     private AccountType accountType;
+
+    public User(String firstName, String lastName, String email, String password, AccountType accountType) {
+        this.id = Uuids.timeBased();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.accountType = accountType;
+    }
+
+    public User() {
+        this.id = Uuids.timeBased();
+    }
 }
