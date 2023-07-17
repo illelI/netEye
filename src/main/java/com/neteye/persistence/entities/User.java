@@ -2,13 +2,7 @@ package com.neteye.persistence.entities;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.neteye.utils.enums.AccountType;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
@@ -20,7 +14,6 @@ import java.util.UUID;
 @Table
 public class User {
     @PrimaryKey
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter @Setter
     private UUID id;
     @Getter @Setter

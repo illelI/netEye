@@ -1,15 +1,13 @@
 package com.neteye.persistence.entities;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Data
