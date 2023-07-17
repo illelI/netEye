@@ -37,7 +37,17 @@ public class User {
         this.accountType = accountType;
     }
 
+    public User(String firstName, String lastName, String email, String password) {
+        this.id = Uuids.timeBased();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.accountType = AccountType.USER;
+    }
+
     public User() {
         this.id = Uuids.timeBased();
+        this.accountType = AccountType.USER;
     }
 }
