@@ -4,6 +4,7 @@ import com.neteye.persistence.repositories.DeviceRepository;
 import com.neteye.utils.Identify;
 import com.neteye.utils.IpAddress;
 import com.neteye.utils.enums.PortNumbersEnum;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,6 @@ import static com.neteye.NetEyeApplication.logger;
 
 @Component
 public class DeviceSearcher {
-
     private final DeviceRepository deviceRepository;
     private AtomicIntegerArray ip = new AtomicIntegerArray(4);
     private IpAddress lastAddress = new IpAddress("224.0.0.0");
