@@ -22,20 +22,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user, admin);
-    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -46,12 +32,11 @@ public class SecurityConfig {
         return http
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/", "/account/registration", "/account/login", "/account/test/*").permitAll();
-                    auth.requestMatchers("/admin*").hasRole("ADMIN");
-                    auth.anyRequest().authenticated();
+                    auth.requestMatchers("/admin**").hasRole("ADMIN");
+                    auth.requestMatchers("/", "/account/registration", "/account/login", "/account/csrf").permitAll();
+                    auth.requestMatchers("/account/**").authenticated();
+                    auth.anyRequest().denyAll();
                 })
-                .csrf()
-                .disable()
                 .build();
     }
 

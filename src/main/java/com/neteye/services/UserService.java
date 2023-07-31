@@ -4,11 +4,14 @@ import com.neteye.persistence.dto.UserDto;
 import com.neteye.persistence.entities.User;
 import com.neteye.persistence.repositories.UserRepository;
 import com.neteye.utils.exceptions.UserAlreadyExistsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -18,7 +21,7 @@ public class UserService {
     }
 
     public User createUser(UserDto userDto) {
-        if(userRepository.findByEmail(userDto.getEmail()) != null) {
+        if(userRepository.findByEmail(userDto.getEmail()).isEmpty()) {
             throw new UserAlreadyExistsException();
         }
         User user = new User();
@@ -29,5 +32,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Account with this email not found"));
+    }
 
 }
