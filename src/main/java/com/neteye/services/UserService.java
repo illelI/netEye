@@ -21,7 +21,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(UserDto userDto) {
-        if(userRepository.findByEmail(userDto.getEmail()).isEmpty()) {
+        if(userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
         User user = new User();
