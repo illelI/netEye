@@ -2,15 +2,20 @@ package com.neteye.controllers;
 
 import com.neteye.components.DeviceSearcher;
 import jakarta.annotation.Nullable;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-import static com.neteye.NetEyeApplication.logger;
+
 
 @RestController
 @RequestMapping("/api/v1/admin")
+@Log4j2
 public class AdminController {
     final DeviceSearcher deviceSearcher;
 
@@ -21,11 +26,7 @@ public class AdminController {
 
     @PostMapping(value = "/scan", consumes = "application/json")
     public void startScanning(@RequestBody @Nullable Map<String, String> ip) {
-        logger.info(ip.get("startingIP"));
-        if(ip.get("startingIP") != null) {
-            deviceSearcher.search(ip.get("startingIP"), ip.get("endingIP"));
-        }
-        else
-            deviceSearcher.search();
+        log.info("Scan requested for ip in range between {} and {}.", ip.get("startingIP"), ip.get("endingIP"));
+        deviceSearcher.search(ip.get("startingIP"), ip.get("endingIP"));
     }
 }

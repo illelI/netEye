@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class IpAddress {
-    private int[] address = new int[4];
+    private final int[] address = new int[4];
     public IpAddress(int first, int second, int third, int fourth) {
         this.address[0] = first;
         this.address[1] = second;
@@ -75,11 +75,11 @@ public class IpAddress {
         return !(equals(ip) || isGreater(ip));
     }
 
-    public InetAddress getIP() {
+    public InetAddress getIP() throws UnknownHostException {
         try {
             return InetAddress.getByName(this.toString());
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            throw new UnknownHostException();
         }
     }
 

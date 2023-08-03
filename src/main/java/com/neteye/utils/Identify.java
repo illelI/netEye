@@ -8,11 +8,9 @@ import org.apache.commons.net.smtp.SMTPClient;
 
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Map;
 
-import static com.neteye.NetEyeApplication.logger;
 
 public class Identify {
     private Identify() {}
@@ -40,35 +38,29 @@ public class Identify {
         return "";
     }
 
+    private static String getSnmpBanner(IpAddress ip) {
+        return "";
+    }
+
     private static String getPop3Banner(IpAddress ip) {
         try {
-            logger.info("grabbing pop3 banner");
             POP3Client pop3Client = new POP3Client();
             pop3Client.connect(ip.toString());
-            logger.info(pop3Client.getReplyString());
             return pop3Client.getReplyString();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e);
         }
         return "";
     }
 
     private static String getImapBanner(IpAddress ip) {
         try {
-            logger.info("grabbing imap banner");
             IMAPClient imapClient = new IMAPClient();
             imapClient.connect(ip.toString());
-            logger.info(imapClient.getReplyString());
             return imapClient.getReplyString();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e);
         }
-        return "";
-    }
-
-    private static String getSnmpBanner(IpAddress ip) {
         return "";
     }
 
@@ -79,7 +71,6 @@ public class Identify {
             return ftpClient.getReplyString();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
         }
         return "";
     }
@@ -91,7 +82,6 @@ public class Identify {
             return smtpClient.getReplyString();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
         }
         return "";
     }
@@ -102,7 +92,6 @@ public class Identify {
             return ftpClient.getReplyString();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
         }
         return "";
     }
@@ -125,10 +114,9 @@ public class Identify {
                     message.append(entry.getKey()).append(": ").append(entry.getValue().get(0)).append("\n");
                 }
             }
-            logger.info(message);
             return message.toString();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+           e.printStackTrace();
         }
         return "";
     }

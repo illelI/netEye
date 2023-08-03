@@ -4,7 +4,6 @@ import com.neteye.persistence.entities.Device;
 import com.neteye.persistence.repositories.DeviceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +16,4 @@ public class DeviceService {
         this.deviceRepository = deviceRepository;
     }
 
-    public List<Device> getDevices() {
-        return deviceRepository.findAll();
-    }
 }

@@ -4,19 +4,17 @@ import com.neteye.persistence.repositories.DeviceRepository;
 import com.neteye.utils.Identify;
 import com.neteye.utils.IpAddress;
 import com.neteye.utils.enums.PortNumbersEnum;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-import static com.neteye.NetEyeApplication.logger;
-
 @Component
+@Log4j2
 public class DeviceSearcher {
     private final DeviceRepository deviceRepository;
     private AtomicIntegerArray ip = new AtomicIntegerArray(4);
@@ -27,22 +25,15 @@ public class DeviceSearcher {
     }
 
     public void search(String... range) {
-        ip.set(0,1);
-        ip.set(1,0);
-        ip.set(2,0);
-        ip.set(3,0);
-        if(range.length > 0) {
-            ip = new IpAddress(range[0]).getAtomicIntegerArrayIP();
-            lastAddress = new IpAddress(range[1]);
-        }
-        logger.info("Stated scanning with ip " + ip.get(0) + "." + ip.get(1) + "." + ip.get(2) + "." + ip.get(3));
+        ip = new IpAddress(range[0]).getAtomicIntegerArrayIP();
+        lastAddress = new IpAddress(range[1]);
+        log.info("Stated scanning with ip {}.{}.{}.{}.", ip.get(0), ip.get(1),ip.get(2), ip.get(3));
         scan();
-        logger.info("Ended scanning");
+        log.info("Scanning ended");
     }
-    public void scan() {
+    private void scan() {
         IpAddress currentIp = new IpAddress();
         InetAddress inetAddress;
-        Socket socket;
         while (new IpAddress(ip).isLesser(lastAddress)) {
             synchronized (this) {
                 ip = new IpAddress(ip).increment().getAtomicIntegerArrayIP();
@@ -50,24 +41,28 @@ public class DeviceSearcher {
             }
             try {
                 inetAddress = currentIp.getIP();
-                logger.info(inetAddress.getHostAddress());
                 if(inetAddress.isReachable(500)) {
-                    for (PortNumbersEnum portNumber : PortNumbersEnum.values()) {
-                        try {
-                            socket = new Socket();
-                            socket.connect(new InetSocketAddress(inetAddress, portNumber.getValue()), 500);
-                            logger.info(portNumber.getValue());
-                            if(socket.isConnected()) {
-                                Identify.fetchInfo(portNumber, currentIp);
-                            }
-                        } catch (Exception e) {
-                        }
-                    }
+                    lookForOpenPorts(inetAddress, currentIp);
                 }
             }
             catch (Exception e) {
-                logger.info(e.getMessage());
+                //there will be a lot of insignificant exceptions due to isReachable method implementation
             }
         }
     }
+
+    private void lookForOpenPorts(InetAddress address, IpAddress currentIp) {
+        for (PortNumbersEnum portNumber : PortNumbersEnum.values()) {
+            try(Socket socket = new Socket()) {
+                socket.connect(new InetSocketAddress(address, portNumber.getValue()), 500);
+                log.info("Current ip - {}. Current port - {}", currentIp, portNumber.getValue());
+                if(socket.isConnected()) {
+                    Identify.fetchInfo(portNumber, currentIp);
+                }
+            } catch (Exception e) {
+                //there will be a lot of insignificant exceptions due to connect method implementation
+            }
+        }
+    }
+
 }
