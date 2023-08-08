@@ -9,13 +9,10 @@ import org.springframework.data.cassandra.repository.config.EnableCassandraRepos
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 @EnableCassandraRepositories
-public class NetEyeApplication implements ApplicationRunner {
+public class NetEyeApplication  {
     public static void main(String[] args) {
         SpringApplication.run(NetEyeApplication.class, args);
     }
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception{
 
-    }
 }

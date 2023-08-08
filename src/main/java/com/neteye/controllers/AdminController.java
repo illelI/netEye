@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/admin")
 @Log4j2
 public class AdminController {
     final DeviceSearcher deviceSearcher;

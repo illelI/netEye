@@ -1,5 +1,6 @@
 package com.neteye.services;
 
+import com.neteye.persistence.dto.AccountUpdateDto;
 import com.neteye.persistence.dto.UserDto;
 import com.neteye.persistence.entities.User;
 import com.neteye.persistence.repositories.UserRepository;
@@ -35,6 +36,20 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Account with this email not found"));
+    }
+
+    public User updateUser(AccountUpdateDto accountDto, User existingUser) {
+        if (!accountDto.getFirstName().isBlank()) {
+            existingUser.setFirstName(accountDto.getFirstName());
+        }
+        if (!accountDto.getLastName().isBlank()) {
+            existingUser.setLastName(accountDto.getLastName());
+        }
+        if (accountDto.getPassword().equals(accountDto.getPasswordConfirmation()) && !accountDto.getPassword().isBlank())
+        {
+            existingUser.setPassword(accountDto.getPassword());
+        }
+        return userRepository.save(existingUser);
     }
 
 }

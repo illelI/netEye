@@ -34,6 +34,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/account/*").authenticated();
                     auth.anyRequest().denyAll();
                 })
+                .headers(headers -> headers.frameOptions(Customizer.withDefaults()))
                 .build();
     }
 

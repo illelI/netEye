@@ -1,17 +1,16 @@
 package com.neteye.controllers;
 
+import com.neteye.persistence.dto.AccountUpdateDto;
 import com.neteye.persistence.dto.LoginDto;
 import com.neteye.persistence.dto.UserDto;
 import com.neteye.persistence.entities.User;
 import com.neteye.services.UserService;
-import com.neteye.utils.GenericResponse;
 import com.neteye.utils.exceptions.GenericException;
 import com.neteye.utils.exceptions.UserAlreadyExistsException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.BindingResult;
@@ -24,11 +23,9 @@ import java.util.UUID;
 @Log4j2
 public class UserController {
     private final UserService userService;
-    private final ApplicationEventPublisher eventPublisher;
 
-    UserController(UserService userService, ApplicationEventPublisher eventPublisher) {
+    UserController(UserService userService) {
         this.userService = userService;
-        this.eventPublisher = eventPublisher;
     }
 
 
@@ -40,12 +37,6 @@ public class UserController {
             throw new UserAlreadyExistsException();
         }
         log.info("User with email {} registered.", registeredUser.getEmail());
-        StringBuilder appUrl = new StringBuilder();
-        appUrl.append("https://")
-                .append(request.getServerName())
-                .append(":")
-                .append(request.getServerPort())
-                .append(request.getContextPath());
 
         return new GenericResponse("Success");
     }
@@ -70,15 +61,15 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public LogoutResponse logout(HttpServletRequest request) {
+    public GenericResponse logout(HttpServletRequest request) {
         log.info("User {} tries to log out.", request.getUserPrincipal().getName());
         try {
             request.logout();
         } catch (ServletException e) {
             log.error(e.getMessage(), e.getCause());
-            return new LogoutResponse("Error during logout");
+            return new GenericResponse("Error during logout");
         }
-        return new LogoutResponse("Success");
+        return new GenericResponse("Success");
     }
 
     @GetMapping("/csrf")
@@ -93,8 +84,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/update")
+    public GenericResponse updateAccount(@RequestBody AccountUpdateDto accountDto, HttpServletRequest request) {
+        Authentication auth = (Authentication) request.getUserPrincipal();
+        User user = (User) auth.getPrincipal();
+        userService.updateUser(accountDto, user);
+        return new GenericResponse("Success");
+    }
+
 
     public record CsrfResponse(String token) {}
-    public record LogoutResponse(String response) {}
+    public record GenericResponse(String response) {}
     public record CurrentUser(UUID id, String email) {}
 }

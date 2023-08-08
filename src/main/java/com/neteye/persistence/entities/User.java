@@ -16,24 +16,17 @@ import java.util.UUID;
 
 
 @Table
+@Getter
+@Setter
 public class User implements UserDetails {
     @PrimaryKey
-    @Getter @Setter
     private UUID id;
-    @Getter @Setter
     private String firstName;
-    @Getter @Setter
     private String lastName;
     @Indexed
-    @Getter @Setter
     private String email;
-    @Getter @Setter
     private String password;
-    @Getter @Setter
     private AccountType accountType;
-    @Setter
-    private boolean isEnabled;
-
     public User(String firstName, String lastName, String email, String password, AccountType accountType) {
         this.id = Uuids.timeBased();
         this.firstName = firstName;
@@ -41,7 +34,6 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.accountType = accountType;
-        this.isEnabled = false;
     }
 
     public User(String firstName, String lastName, String email, String password) {
@@ -51,7 +43,6 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.accountType = AccountType.USER;
-        this.isEnabled = false;
     }
 
     public User() {

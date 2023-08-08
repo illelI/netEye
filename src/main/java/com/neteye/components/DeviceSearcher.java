@@ -1,5 +1,6 @@
 package com.neteye.components;
 
+import com.neteye.persistence.entities.Device;
 import com.neteye.persistence.repositories.DeviceRepository;
 import com.neteye.utils.Identify;
 import com.neteye.utils.IpAddress;
@@ -46,7 +47,7 @@ public class DeviceSearcher {
                 }
             }
             catch (Exception e) {
-                //there will be a lot of insignificant exceptions due to isReachable method implementation
+                //there will be a lot of insignificant exceptions due to InetAddress.isReachable method implementation
             }
         }
     }
@@ -57,10 +58,11 @@ public class DeviceSearcher {
                 socket.connect(new InetSocketAddress(address, portNumber.getValue()), 500);
                 log.info("Current ip - {}. Current port - {}", currentIp, portNumber.getValue());
                 if(socket.isConnected()) {
-                    Identify.fetchInfo(portNumber, currentIp);
+                    Device device = new Device(currentIp.toString(), portNumber.getValue(), Identify.fetchInfo(portNumber, currentIp));
+                    deviceRepository.save(device);
                 }
             } catch (Exception e) {
-                //there will be a lot of insignificant exceptions due to connect method implementation
+                //there will be a lot of insignificant exceptions due to Socket.connect method implementation
             }
         }
     }
