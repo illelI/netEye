@@ -1,10 +1,11 @@
 package com.neteye.utils.exceptions;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 public class GenericException extends RuntimeException{
     @Getter
-    private final int code;
+    private final HttpStatus httpStatus;
 
     public GenericException(String message) {
         this(message, 400);
@@ -12,6 +13,6 @@ public class GenericException extends RuntimeException{
 
     public GenericException(String message, int code) {
         super(message);
-        this.code = code;
+        this.httpStatus = HttpStatus.valueOf(code);
     }
 }

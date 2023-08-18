@@ -1,4 +1,4 @@
-package com.neteye.configuration;
+package com.neteye.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
