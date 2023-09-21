@@ -1,0 +1,62 @@
+.register-form-container {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: rgb(220,53,69);
+    background-color: rgb(18, 19, 20);
+}
+
+.register-auth-form-container {
+    border: solid 2px;
+    border-radius: 5%;
+    padding: 3% 3% 3% 3%;
+    background-color: rgb(23, 30, 36);
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.register-button, .register-input {
+    margin: 5px 5px 5px 5px;
+}
+
+.register-button:hover {
+    color: rgb(33,37,41) !important;
+}
+
+.register-input {
+    border: solid 1px;
+    border-color: rgb(220,53,69);
+    background-color: rgb(33,37,41);
+    color: rgb(220,53,69);
+    border-radius: 5px;
+}
+
+.register-input:focus-visible {
+    outline: solid 1px crimson;
+}
+
+.register-button-text {
+    font-weight: 600;
+}
+
+.register-login-btn {
+    border: none;
+    color: rgb(220,53,69);
+    background: none;
+    text-decoration: underline;
+}
+
+.register-errors {
+    font-size: x-small;
+    text-align: left;
+    margin-left: 2%;
+}
+
+#register-error {
+    font-size: medium;
+}

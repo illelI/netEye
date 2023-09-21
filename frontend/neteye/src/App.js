@@ -1,23 +1,34 @@
 import logo from './logo.svg';
 import './App.css';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register'
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Route, Routes, BrowserRouter} from 'react-router-dom';
 
 function App() {
+
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8080/api/v1/csrf', 
+    {
+      withCredentials: true
+    })
+      .then(response => {
+        document.cookie = "token="+response.data.token;
+      })
+      .catch(error => {
+        console.error(error);
+      })
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login/>} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

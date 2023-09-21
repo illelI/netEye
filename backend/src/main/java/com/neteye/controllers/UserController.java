@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.BindingResult;
@@ -29,16 +30,21 @@ public class UserController {
     }
 
 
-    @PostMapping("/registration")
-    public GenericResponse registerAccount(@RequestBody @Valid UserDto user, HttpServletRequest request) {
+    @PostMapping("/register")
+    public CurrentUser registerAccount(@RequestBody @Valid UserDto user, HttpServletRequest request) {
         log.info("User with ip {} tries to register new account.", request.getRemoteAddr());
         User registeredUser = userService.createUser(user);
         if (registeredUser == null) {
             throw new UserAlreadyExistsException();
         }
+        try {
+            request.login(user.getEmail(), user.getPassword());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         log.info("User with email {} registered.", registeredUser.getEmail());
 
-        return new GenericResponse("Success");
+        return new CurrentUser(registeredUser.getId(), user.getEmail());
     }
 
     @PostMapping("/login")
@@ -49,11 +55,10 @@ public class UserController {
         }
         try {
             request.login(loginDto.getEmail(), loginDto.getPassword());
-        } catch (ServletException e) {
-            log.error(e.getMessage(), e.getCause());
+        } catch (ServletException | BadCredentialsException e) {
+            log.error(e.getMessage());
             throw new GenericException("Invalid username or password");
         }
-
         Authentication auth = (Authentication) request.getUserPrincipal();
         User user = (User) auth.getPrincipal();
         log.info("User with email {} logged in.", user.getEmail());
@@ -66,22 +71,10 @@ public class UserController {
         try {
             request.logout();
         } catch (ServletException e) {
-            log.error(e.getMessage(), e.getCause());
+            log.error(e.getMessage());
             return new GenericResponse("Error during logout");
         }
         return new GenericResponse("Success");
-    }
-
-    @GetMapping("/csrf")
-    public CsrfResponse csrf(HttpServletRequest request) {
-        log.info("Sending csrf token to ip {}.", request.getRemoteAddr());
-        try {
-            CsrfToken csrf = (CsrfToken) request.getAttribute("_csrf");
-            return new CsrfResponse(csrf.getToken());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.getCause());
-            return null;
-        }
     }
 
     @PostMapping("/update")
@@ -92,8 +85,6 @@ public class UserController {
         return new GenericResponse("Success");
     }
 
-
-    public record CsrfResponse(String token) {}
     public record GenericResponse(String response) {}
     public record CurrentUser(UUID id, String email) {}
 }
