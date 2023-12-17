@@ -3,6 +3,7 @@ package com.neteye.ServiceTests;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.DriverTimeoutException;
+import com.neteye.persistence.dto.AccountUpdateDto;
 import com.neteye.persistence.dto.UserDto;
 import com.neteye.persistence.entities.User;
 import com.neteye.persistence.repositories.UserRepository;
@@ -88,6 +89,19 @@ class UserServiceTests {
     @Test
     void shouldThrowUsernameNotFoundExceptionWhenTryingToLoadUserWithEmailThatIsNotInDatabase() {
         Assertions.assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername("not@in.db"));
+    }
+
+    @Test
+    void shouldUpdateUserInfo() {
+        UserDto userDto = new UserDto("name11", "name11", "password", "password", "mail11@mail.com");
+        User existingUser = userService.createUser(userDto);
+        AccountUpdateDto accountUpdateDto = new AccountUpdateDto();
+        accountUpdateDto.setFirstName("name12");
+        accountUpdateDto.setLastName("");
+        accountUpdateDto.setPassword("");
+        accountUpdateDto.setPasswordConfirmation("");
+        User user = userService.updateUser(accountUpdateDto, existingUser);
+        assertThat(user.getFirstName()).isEqualTo(accountUpdateDto.getFirstName());
     }
 
 }

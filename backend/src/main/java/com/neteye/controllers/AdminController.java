@@ -25,8 +25,8 @@ public class AdminController {
     }
 
     @PostMapping(value = "/scan", consumes = "application/json")
-    public void startScanning(@RequestBody @Nullable Map<String, String> ip) {
-        log.info("Scan requested for ip in range between {} and {}.", ip.get("startingIP"), ip.get("endingIP"));
-        deviceSearcher.search(ip.get("startingIP"), ip.get("endingIP"));
+    public void startScanning(@RequestBody @Nullable Map<String, String> searchProperties) throws InterruptedException {
+        log.info("Scan requested for ip in range between {} and {}.", searchProperties.get("startingIP"), searchProperties.get("endingIP"));
+        deviceSearcher.search(searchProperties);
     }
 }

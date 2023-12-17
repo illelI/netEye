@@ -1,26 +1,34 @@
 package com.neteye.utils;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
+@Data
+@NoArgsConstructor
 public class IpAddress {
-    private final int[] address = new int[4];
+    private int[] address = new int[4];
+
     public IpAddress(int first, int second, int third, int fourth) {
         this.address[0] = first;
         this.address[1] = second;
         this.address[2] = third;
         this.address[3] = fourth;
     }
-    public IpAddress() {
+
+    public IpAddress(int[] address) {
+        this.address = address;
     }
 
     public IpAddress(String ip) {
-        String[] ipSplitted = ip.split("\\.");
-        this.address[0] = Integer.parseInt(ipSplitted[0]);
-        this.address[1] = Integer.parseInt(ipSplitted[1]);
-        this.address[2] = Integer.parseInt(ipSplitted[2]);
-        this.address[3] = Integer.parseInt(ipSplitted[3]);
+        String[] ipSplit = ip.split("\\.");
+        this.address[0] = Integer.parseInt(ipSplit[0]);
+        this.address[1] = Integer.parseInt(ipSplit[1]);
+        this.address[2] = Integer.parseInt(ipSplit[2]);
+        this.address[3] = Integer.parseInt(ipSplit[3]);
     }
 
     public IpAddress(AtomicIntegerArray ip) {
@@ -37,26 +45,13 @@ public class IpAddress {
         this.address[3] = ip.get(3);
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder().append(address[0])
-                .append(".").append(address[1]).append(".").append(address[2])
-                .append(".").append(address[3]).toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        try {
-            IpAddress tmp = (IpAddress) obj;
-            if(this.address[0] != tmp.address[0]) return false;
-            if(this.address[1] != tmp.address[1]) return false;
-            if(this.address[2] != tmp.address[2]) return false;
-            return this.address[3] == tmp.address[3];
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+    public byte[] getByteAddress() {
+        byte[] address = new byte[4];
+        address[0] = (byte) this.address[0];
+        address[1] = (byte) this.address[1];
+        address[2] = (byte) this.address[2];
+        address[3] = (byte) this.address[3];
+        return address;
     }
 
     public boolean isGreater(IpAddress ip) {
@@ -77,7 +72,7 @@ public class IpAddress {
 
     public InetAddress getIP() throws UnknownHostException {
         try {
-            return InetAddress.getByName(this.toString());
+            return InetAddress.getByAddress(this.getByteAddress());
         } catch (UnknownHostException e) {
             throw new UnknownHostException();
         }
@@ -110,4 +105,61 @@ public class IpAddress {
         return this;
     }
 
+    public static long calculateHowManyIpsAreInRange(IpAddress first, IpAddress last) {
+        //counting how many ip addresses are in range form 0.0.0.0 to ip, then first - last
+        long howManyInFirst = (long) ( Math.pow(255, 3) * first.getAddress()[0] +
+                Math.pow(255, 2) * first.getAddress()[1] +
+                255L * first.getAddress()[2] + first.getAddress()[3]);
+
+        long howManyInLast = (long) ( Math.pow(255, 3) * last.getAddress()[0] +
+                Math.pow(255, 2) * last.getAddress()[1] +
+                255L * last.getAddress()[2] + last.getAddress()[3]);
+
+        return howManyInLast - howManyInFirst;
+    }
+
+    public static IpAddress addToIp(IpAddress address, long number) {
+        int[] ipArray = new int[4];
+
+        for (int i = 3; i >= 0; i--) {
+            ipArray[i] = (int) (number & 0xFF);
+            number >>= 8;
+        }
+
+        return addTwoAddresses(address, new IpAddress(new AtomicIntegerArray(ipArray)));
+    }
+
+    private static IpAddress addTwoAddresses(IpAddress first, IpAddress second) {
+        int[] firstOctets = first.getAddress();
+        int[] secondOctets = second.getAddress();
+        int[] resultAddress = new int[4];
+
+        resultAddress[3] = firstOctets[3] + secondOctets[3];
+        resultAddress[2] = firstOctets[2] + secondOctets[2];
+        resultAddress[1] = firstOctets[1] + secondOctets[1];
+        resultAddress[0] = firstOctets[0] + secondOctets[0];
+
+        int tmp = resultAddress[3] / 256;
+        resultAddress[3] %= 256;
+        resultAddress[2] += tmp;
+        tmp = resultAddress[2] / 256;
+        resultAddress[2] %= 256;
+        resultAddress[1] += tmp;
+        tmp = resultAddress[1] / 256;
+        resultAddress[1] %= 256;
+        resultAddress[0] += tmp;
+
+        if (resultAddress[0] > 255) {
+            throw new IllegalArgumentException();
+        }
+
+        return new IpAddress(resultAddress);
+    }
+
+    @Override
+    public String toString() {
+        return address[0] +
+                "." + address[1] + "." + address[2] +
+                "." + address[3];
+    }
 }
