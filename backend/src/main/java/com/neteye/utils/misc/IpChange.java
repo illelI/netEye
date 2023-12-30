@@ -1,4 +1,4 @@
-package com.neteye.utils;
+package com.neteye.utils.misc;
 
 import com.neteye.utils.enums.RestrictedAddressesEnum;
 

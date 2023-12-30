@@ -1,12 +1,15 @@
 package com.neteye.utils;
 
-import com.neteye.utils.enums.PortNumbersEnum;
+import com.neteye.utils.misc.ServiceInfo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.imap.IMAPClient;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.smtp.SMTPClient;
+import org.apache.commons.net.telnet.TelnetClient;
 
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -14,104 +17,116 @@ import java.util.Map;
 
 @Log4j2
 public class Identify {
+    private static final int CONNECTION_TIMEOUT = 60000;
+    private static final int OPENED_CONNECTION_TIMEOUT = 60000;
+
     private Identify() {}
-    public static String fetchInfo(PortNumbersEnum port, IpAddress ip) {
-        return switch (port) {
-            case FTP -> getFtpBanner(ip);
-            case SSH -> getSshBanner(ip);
-            case TELNET -> getTelnetBanner(ip);
-            case SMTP -> getSmtpBanner(ip);
-            case DNS -> getDnsBanner(ip);
-            case HTTP, HTTP8080, HTTPS -> getHttpBanner(port, ip);
-            case POP3 -> getPop3Banner(ip);
-            case IMAP -> getImapBanner(ip);
-            case SNMP -> getSnmpBanner(ip);
+    public static ServiceInfo fetchPortInfo(ServiceInfo info) {
+        return switch (info.getPort()) {
+            case FTP -> getFtpBanner(info);
+            case SSH -> getSshBanner(info);
+            case TELNET -> getTelnetBanner(info);
+            case SMTP -> getSmtpBanner(info);
+            case DNS -> getDnsBanner(info);
+            case HTTP, HTTP8080, HTTPS -> getHttpBanner(info);
+            case POP3 -> getPop3Banner(info);
+            case IMAP -> getImapBanner(info);
+            case SNMP -> getSnmpBanner(info);
         };
-
     }
 
-    private static String getSshBanner(IpAddress ip) {
+    private static ServiceInfo getSshBanner(ServiceInfo info) {
 
-        return "";
+        return info;
     }
 
-    private static String getDnsBanner(IpAddress ip) {
-        return "";
+    private static ServiceInfo getDnsBanner(ServiceInfo info) {
+        return info;
     }
 
-    private static String getSnmpBanner(IpAddress ip) {
-        return "";
+    private static ServiceInfo getSnmpBanner(ServiceInfo info) {
+        return info;
     }
 
-    private static String getPop3Banner(IpAddress ip) {
+    private static ServiceInfo getPop3Banner(ServiceInfo info) {
         try {
             POP3Client pop3Client = new POP3Client();
-            pop3Client.setDefaultTimeout(700);
-            pop3Client.setSoTimeout(700);
-            pop3Client.connect(ip.toString());
-            return pop3Client.getReplyString();
-        } catch (Exception e) {
+            pop3Client.setDefaultTimeout(CONNECTION_TIMEOUT);
+            pop3Client.connect(info.getIp());
+            info.setInfo(pop3Client.getReplyString());
+        } catch (Exception ignored) {
+            //insignificant exception
         }
-        return "";
+        return info;
     }
 
-    private static String getImapBanner(IpAddress ip) {
+    private static ServiceInfo getImapBanner(ServiceInfo info) {
         try {
             IMAPClient imapClient = new IMAPClient();
-            imapClient.setDefaultTimeout(700);
-            imapClient.setSoTimeout(700);
-            imapClient.connect(ip.toString());
-            return imapClient.getReplyString();
-        } catch (Exception e) {
+            imapClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+            imapClient.connect(info.getIp());
+            info.setInfo(imapClient.getReplyString());
+        } catch (Exception ignored) {
+            //insignificant exception
         }
-        return "";
+        return info;
     }
 
-    private static String getTelnetBanner(IpAddress ip) {
+    private static ServiceInfo getTelnetBanner(ServiceInfo info) {
         try {
-            FTPClient ftpClient = new FTPClient();
-            ftpClient.setDefaultTimeout(700);
-            ftpClient.setSoTimeout(700);
-            ftpClient.connect(ip.toString());
-            return ftpClient.getReplyString();
-        } catch (Exception e) {
+            TelnetClient telnetClient = new TelnetClient();
+            telnetClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+            telnetClient.connect(info.getIp());
+
+            InputStream is = telnetClient.getInputStream();
+
+            byte[] buffer = new byte[1024];
+            int bytesRead = is.read(buffer);
+            String m = new String(buffer, 0, bytesRead);
+            info.setInfo(new String(buffer, 0, bytesRead));
+        } catch (Exception ignored) {
+            //insignificant exception
         }
-        return "";
+        return info;
     }
 
-    private static String getSmtpBanner(IpAddress ip) {
+    private static ServiceInfo getSmtpBanner(ServiceInfo info) {
         try {
             SMTPClient smtpClient = new SMTPClient();
-            smtpClient.setDefaultTimeout(700);
-            smtpClient.setSoTimeout(700);
-            smtpClient.connect(ip.toString(), 25);
-            return smtpClient.getReplyString();
-        } catch (Exception e) {
+            smtpClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+
+            smtpClient.connect(info.getIp());
+            info.setInfo(smtpClient.getReplyString());
+        } catch (Exception ignored) {
+            //insignificant exception
         }
-        return "";
+        return info;
     }
-    private static String getFtpBanner(IpAddress ip) {
+    private static ServiceInfo getFtpBanner(ServiceInfo info) {
         try {
             FTPClient ftpClient = new FTPClient();
-            ftpClient.setDefaultTimeout(700);
-            ftpClient.setSoTimeout(700);
-            ftpClient.connect(ip.toString(), 21);
-            return ftpClient.getReplyString();
-        } catch (Exception e) {
+            ftpClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+
+            ftpClient.connect(info.getIp());
+            info.setInfo(ftpClient.getReplyString());
+        } catch (Exception ignored) {
+            //insignificant exception
         }
-        return "";
+        return info;
     }
 
-    private static String getHttpBanner(PortNumbersEnum port, IpAddress ip) {
+    private static ServiceInfo getHttpBanner(ServiceInfo info) {
         try {
-            String urlString = "http://" + ip;
+            String urlString = "http://" + info.getIp();
             StringBuilder message = new StringBuilder();
-            if(port.getValue() == 443) {
-                urlString = "https://" + ip;
+            if(info.getPort().getValue() == 443) {
+                urlString = "https://" + info.getIp();
             }
-            URL url = new URL(urlString);
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
             URLConnection conn = url.openConnection();
-            conn.setReadTimeout(700);
+            conn.setConnectTimeout(CONNECTION_TIMEOUT);
+            conn.setReadTimeout(OPENED_CONNECTION_TIMEOUT);
             Map<String, List<String>> map = conn.getHeaderFields();
             for (Map.Entry<String, List<String>> entry : map.entrySet()) {
                 if(entry.getKey() == null) {
@@ -121,9 +136,12 @@ public class Identify {
                     message.append(entry.getKey()).append(": ").append(entry.getValue().getFirst()).append("\n");
                 }
             }
-            return message.toString();
-        } catch (Exception e) {
+            info.setInfo(message.toString());
+        } catch (Exception ignored) {
+            //insignificant exception
         }
-        return "";
+        return info;
     }
+
+
 }

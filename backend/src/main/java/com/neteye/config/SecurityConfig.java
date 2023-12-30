@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers( "/account/register", "/account/login", "/api/v1/csrf", "/device/*").permitAll();
                     auth.requestMatchers( "admin/*").permitAll();
+                    auth.requestMatchers("/device/*").permitAll();
                     //auth.requestMatchers("/admin/*").hasRole("ADMIN");
                     auth.requestMatchers("/account/*").authenticated();
                     auth.anyRequest().denyAll();

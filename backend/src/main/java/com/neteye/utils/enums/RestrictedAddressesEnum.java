@@ -1,6 +1,6 @@
 package com.neteye.utils.enums;
 
-import com.neteye.utils.IpAddress;
+import com.neteye.utils.misc.IpAddress;
 
 public enum RestrictedAddressesEnum {
     POOL1(new IpAddress(10,0,0,0), new IpAddress(10,255,255,255)),
