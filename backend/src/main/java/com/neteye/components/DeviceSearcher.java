@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.stream.Collectors;
 
 @Component
 @Log4j2
@@ -89,14 +91,9 @@ public class DeviceSearcher {
             try {
                 inetAddress = currentAddress.getIP();
                 if(inetAddress.isReachable(700)) {
-                    List<Integer> foundPorts = lookForOpenPorts(inetAddress, currentAddress);
+                    List<PortInfo> foundPorts = lookForOpenPorts(currentAddress);
                     if (!foundPorts.isEmpty()) {
-                        deviceRepository.save(new Device(
-                                currentAddress.toString(),
-                                foundPorts,
-                                inetAddress.getHostName(),
-                                "", "", ""
-                        ));
+                        saveToDb(currentAddress, foundPorts);
                     }
                 }
             }
@@ -109,17 +106,15 @@ public class DeviceSearcher {
         howManyThreadsLeft.decrementAndGet();
     }
 
-    private List<Integer> lookForOpenPorts(InetAddress address, IpAddress currentIp) {
-        List<Integer> foundPorts = new ArrayList<>();
+    private List<PortInfo> lookForOpenPorts(IpAddress currentIp) {
+        List<PortInfo> foundPorts = new ArrayList<>();
         for (PortNumbersEnum portNumber : PortNumbersEnum.values()) {
-            if (portNumber != PortNumbersEnum.FTP) continue;
             try(Socket socket = new Socket()) {
-                socket.connect(new InetSocketAddress(address, portNumber.getValue()), 700);
+                socket.connect(new InetSocketAddress(currentIp.getIP(), portNumber.getValue()), 700);
                 if(socket.isConnected()) {
-                    foundPorts.add(portNumber.getValue());
-                    ServiceInfo serviceInfo = new ServiceInfo(address, portNumber);
+                    ServiceInfo serviceInfo = new ServiceInfo(currentIp.getIP(), portNumber);
                     serviceInfo = Identify.fetchPortInfo(serviceInfo);
-                    portInfoRepository.save(new PortInfo(
+                    foundPorts.add(new PortInfo(
                             new PortInfoPrimaryKey(currentIp.toString(), portNumber.getValue()),
                             serviceInfo.getInfo(),
                             serviceInfo.getAppName(),
@@ -131,5 +126,26 @@ public class DeviceSearcher {
             }
         }
         return foundPorts;
+    }
+
+    private void saveToDb(IpAddress ipAddress, List<PortInfo> portInfos) {
+        String hostname;
+        try {
+            hostname = ipAddress.getIP().getHostName();
+        } catch (UnknownHostException e) {
+            hostname = "";
+        }
+        portInfoRepository.saveAll(portInfos);
+        List<Integer> openedPorts = portInfos.stream()
+                .map(portInfo -> portInfo.getPrimaryKey().getPort())
+                .toList();
+        deviceRepository.save(new Device(
+                ipAddress.toString(),
+                openedPorts,
+                hostname,
+                "",
+                "",
+                ""
+        ));
     }
 }

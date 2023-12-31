@@ -1,5 +1,6 @@
 package com.neteye.utils;
 
+import com.neteye.utils.enums.commonServers.FtpServersEnum;
 import com.neteye.utils.misc.ServiceInfo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.net.ftp.FTPClient;
@@ -109,10 +110,20 @@ public class Identify {
 
             ftpClient.connect(info.getIp());
             info.setInfo(ftpClient.getReplyString());
+            checkMostPopularFtpServers(info);
         } catch (Exception ignored) {
             //insignificant exception
         }
         return info;
+    }
+
+    private static void checkMostPopularFtpServers(ServiceInfo info) {
+        for (FtpServersEnum server : FtpServersEnum.values()) {
+            if (info.getInfo().contains(server.getServerName())) {
+                info.setAppName(server.getServerName());
+                break;
+            }
+        }
     }
 
     private static ServiceInfo getHttpBanner(ServiceInfo info) {
