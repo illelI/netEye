@@ -7,7 +7,7 @@ import com.neteye.persistence.repositories.DeviceRepository;
 import com.neteye.persistence.repositories.PortInfoRepository;
 import com.neteye.utils.Identify;
 import com.neteye.utils.misc.IpAddress;
-import com.neteye.utils.enums.PortNumbersEnum;
+import com.neteye.utils.enums.DefaultServerPortNumbers;
 import com.neteye.utils.misc.ServiceInfo;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-import java.util.stream.Collectors;
 
 @Component
 @Log4j2
@@ -108,7 +107,7 @@ public class DeviceSearcher {
 
     private List<PortInfo> lookForOpenPorts(IpAddress currentIp) {
         List<PortInfo> foundPorts = new ArrayList<>();
-        for (PortNumbersEnum portNumber : PortNumbersEnum.values()) {
+        for (DefaultServerPortNumbers portNumber : DefaultServerPortNumbers.values()) {
             try(Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress(currentIp.getIP(), portNumber.getValue()), 700);
                 if(socket.isConnected()) {

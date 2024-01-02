@@ -1,6 +1,6 @@
 package com.neteye.utils.enums.commonServers;
 
-public enum FtpServersEnum {
+public enum FtpServers {
     VSFTPD("vsftpd"),
     PROFTPD("ProFTPD"),
     PURE_FTPD("Pure-FTPd"),
@@ -10,14 +10,14 @@ public enum FtpServersEnum {
     PROVIDE("ProVide"),
     CRUSHFTP("CrushFTP");
 
-    private final String serverName;
+    private final String appName;
 
-    FtpServersEnum(String serverName) {
-        this.serverName = serverName;
+    FtpServers(String appName) {
+        this.appName = appName;
     }
 
-    public String getServerName() {
-        return serverName;
+    public String getAppName() {
+        return appName;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.neteye.utils;
 
-import com.neteye.utils.enums.commonServers.FtpServersEnum;
+import com.neteye.utils.enums.commonServers.FtpServers;
+import com.neteye.utils.enums.commonServers.SmtpServers;
 import com.neteye.utils.misc.ServiceInfo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.net.ftp.FTPClient;
@@ -83,7 +84,6 @@ public class Identify {
 
             byte[] buffer = new byte[1024];
             int bytesRead = is.read(buffer);
-            String m = new String(buffer, 0, bytesRead);
             info.setInfo(new String(buffer, 0, bytesRead));
         } catch (Exception ignored) {
             //insignificant exception
@@ -98,11 +98,23 @@ public class Identify {
 
             smtpClient.connect(info.getIp());
             info.setInfo(smtpClient.getReplyString());
+            checkMostPopularSmtpServers(info);
         } catch (Exception ignored) {
             //insignificant exception
         }
         return info;
     }
+
+    private static void checkMostPopularSmtpServers(ServiceInfo info) {
+        for (SmtpServers server : SmtpServers.values()) {
+            if (info.getInfo().contains(server.getAppName())) {
+                info.setAppName(server.getAppName());
+                getAppVersion(info);
+                break;
+            }
+        }
+    }
+
     private static ServiceInfo getFtpBanner(ServiceInfo info) {
         try {
             FTPClient ftpClient = new FTPClient();
@@ -118,9 +130,9 @@ public class Identify {
     }
 
     private static void checkMostPopularFtpServers(ServiceInfo info) {
-        for (FtpServersEnum server : FtpServersEnum.values()) {
-            if (info.getInfo().contains(server.getServerName())) {
-                info.setAppName(server.getServerName());
+        for (FtpServers server : FtpServers.values()) {
+            if (info.getInfo().contains(server.getAppName())) {
+                info.setAppName(server.getAppName());
                 break;
             }
         }
@@ -154,5 +166,16 @@ public class Identify {
         return info;
     }
 
+    private static void getAppVersion(ServiceInfo serviceInfo) {
+        String[] split = serviceInfo.getInfo().split(" ");
+        String regex = "^[0-9./]+$";
+        for (String s : split) {
+            if (s.equals("220")) continue;
+            if (s.matches(regex)) {
+                serviceInfo.setVersion(s);
+                break;
+            }
+        }
+    }
 
 }

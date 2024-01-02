@@ -1,6 +1,6 @@
 package com.neteye.utils.enums;
 
-public enum PortNumbersEnum {
+public enum DefaultServerPortNumbers {
     FTP(21),
     SSH(22),
     TELNET(23),
@@ -13,7 +13,7 @@ public enum PortNumbersEnum {
     IMAP(143),
     SNMP(161);
     private final int value;
-    PortNumbersEnum(final int newValue) {
+    DefaultServerPortNumbers(final int newValue) {
         value = newValue;
     }
     public int getValue() {
