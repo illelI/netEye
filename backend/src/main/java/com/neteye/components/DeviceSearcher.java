@@ -109,12 +109,12 @@ public class DeviceSearcher {
         List<PortInfo> foundPorts = new ArrayList<>();
         for (DefaultServerPortNumbers portNumber : DefaultServerPortNumbers.values()) {
             try(Socket socket = new Socket()) {
-                socket.connect(new InetSocketAddress(currentIp.getIP(), portNumber.getValue()), 700);
+                socket.connect(new InetSocketAddress(currentIp.getIP(), portNumber.getPortNumber()), 700);
                 if(socket.isConnected()) {
                     ServiceInfo serviceInfo = new ServiceInfo(currentIp.getIP(), portNumber);
                     serviceInfo = Identify.fetchPortInfo(serviceInfo);
                     foundPorts.add(new PortInfo(
-                            new PortInfoPrimaryKey(currentIp.toString(), portNumber.getValue()),
+                            new PortInfoPrimaryKey(currentIp.toString(), portNumber.getPortNumber()),
                             serviceInfo.getInfo(),
                             serviceInfo.getAppName(),
                             serviceInfo.getVersion()
@@ -138,13 +138,18 @@ public class DeviceSearcher {
         List<Integer> openedPorts = portInfos.stream()
                 .map(portInfo -> portInfo.getPrimaryKey().getPort())
                 .toList();
+
+        String system = Identify.getOperatingSystem(portInfos);
+        String location = "";
+        String typeOfDevice = Identify.checkIfDeviceIsCamera(ipAddress.toString()) ? "camera" : "server";
+
         deviceRepository.save(new Device(
                 ipAddress.toString(),
                 openedPorts,
                 hostname,
-                "",
-                "",
-                ""
+                location,
+                system,
+                typeOfDevice
         ));
     }
 }

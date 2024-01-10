@@ -1,7 +1,7 @@
 package com.neteye.utils.enums.commonServers;
 
 public enum FtpServers {
-    VSFTPD("vsftpd"),
+    VSFTPD("vsFTPd"),
     PROFTPD("ProFTPD"),
     PURE_FTPD("Pure-FTPd"),
     FILEZILLA_SERVER("FileZilla Server"),

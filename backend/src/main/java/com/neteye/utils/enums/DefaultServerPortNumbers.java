@@ -12,11 +12,12 @@ public enum DefaultServerPortNumbers {
     POP3(110),
     IMAP(143),
     SNMP(161);
-    private final int value;
-    DefaultServerPortNumbers(final int newValue) {
-        value = newValue;
+
+    private final int portNumber;
+    DefaultServerPortNumbers(final int portNumber) {
+        this.portNumber = portNumber;
     }
-    public int getValue() {
-        return value;
+    public int getPortNumber() {
+        return portNumber;
     }
 }

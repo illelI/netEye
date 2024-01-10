@@ -1,7 +1,10 @@
 package com.neteye.utils;
 
+import com.neteye.persistence.entities.PortInfo.PortInfo;
+import com.neteye.utils.enums.DefaultServerPortNumbers;
 import com.neteye.utils.enums.commonServers.FtpServers;
 import com.neteye.utils.enums.commonServers.SmtpServers;
+import com.neteye.utils.enums.commonServers.WwwServers;
 import com.neteye.utils.misc.ServiceInfo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.net.ftp.FTPClient;
@@ -11,16 +14,16 @@ import org.apache.commons.net.smtp.SMTPClient;
 import org.apache.commons.net.telnet.TelnetClient;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Log4j2
 public class Identify {
     private static final int CONNECTION_TIMEOUT = 60000;
-    private static final int OPENED_CONNECTION_TIMEOUT = 60000;
 
     private Identify() {}
     public static ServiceInfo fetchPortInfo(ServiceInfo info) {
@@ -140,42 +143,134 @@ public class Identify {
 
     private static ServiceInfo getHttpBanner(ServiceInfo info) {
         try {
-            String urlString = "http://" + info.getIp();
+            String urlString = "http://" + info.getIp().getHostName();
             StringBuilder message = new StringBuilder();
-            if(info.getPort().getValue() == 443) {
-                urlString = "https://" + info.getIp();
+            if(info.getPort() == DefaultServerPortNumbers.HTTPS) {
+                urlString = "https://" + info.getIp().getHostName();
             }
             URI uri = new URI(urlString);
             URL url = uri.toURL();
-            URLConnection conn = url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(CONNECTION_TIMEOUT);
-            conn.setReadTimeout(OPENED_CONNECTION_TIMEOUT);
-            Map<String, List<String>> map = conn.getHeaderFields();
-            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-                if(entry.getKey() == null) {
-                    message.append(entry.getValue().getFirst()).append("\n");
+            conn.setReadTimeout(CONNECTION_TIMEOUT);
+            Map<String, List<String>> headerFields = conn.getHeaderFields();
+
+            for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
+                if (entry.getKey() != null) {
+                    message.append(entry.getKey()).append(": ");
                 }
-                else {
-                    message.append(entry.getKey()).append(": ").append(entry.getValue().getFirst()).append("\n");
+                for (String s : entry.getValue())
+                {
+                    message.append(s).append(" ");
                 }
+                message.append("\n");
             }
+
             info.setInfo(message.toString());
+
+            if (headerFields.containsKey("Server")) {
+                checkMostPopularWwwServers(info, headerFields.get("Server").getFirst());
+            }
+
         } catch (Exception ignored) {
             //insignificant exception
         }
         return info;
     }
 
+    private static void checkMostPopularWwwServers(ServiceInfo info, String server) {
+        for (WwwServers servers : WwwServers.values()) {
+            if (server.contains(servers.getAppName())) {
+                info.setAppName(servers.getAppName());
+                getWwwAppVersion(info, server);
+                break;
+            }
+        }
+    }
+
+    private static void getWwwAppVersion(ServiceInfo info, String server) {
+        String[] split = server.split("[ /]");
+        String regexToCheckIfItIsVersion = "^[0-9./]+$";
+
+        for (String s : split) {
+            if (s.matches(regexToCheckIfItIsVersion)) {
+                info.setVersion(s);
+                break;
+            }
+        }
+    }
+
     private static void getAppVersion(ServiceInfo serviceInfo) {
         String[] split = serviceInfo.getInfo().split(" ");
-        String regex = "^[0-9./]+$";
+        String regexToCheckIfItIsVersion = "^[0-9./]+$";
         for (String s : split) {
             if (s.equals("220")) continue;
-            if (s.matches(regex)) {
+            if (s.matches(regexToCheckIfItIsVersion)) {
                 serviceInfo.setVersion(s);
                 break;
             }
         }
     }
+
+    public static boolean checkIfDeviceIsCamera(String ip) {
+        return checkIfDeviceRespondOnOnvifEndpoint("http", ip) || checkIfDeviceRespondOnOnvifEndpoint("https", ip);
+    }
+
+    private static boolean checkIfDeviceRespondOnOnvifEndpoint(String protocol, String ip) {
+        String urlString = protocol + "://" + ip + "/onvif";
+        try {
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setConnectTimeout(CONNECTION_TIMEOUT);
+            connection.setReadTimeout(CONNECTION_TIMEOUT);
+            connection.setRequestMethod("GET");
+
+            int response = connection.getResponseCode() / 100;
+
+            return response == 2;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getOperatingSystem(List<PortInfo> infos) {
+        List<String> results = new ArrayList<>();
+        for (PortInfo info : infos) {
+            if (info.getPrimaryKey().getPort() == DefaultServerPortNumbers.HTTP.getPortNumber() ||
+                info.getPrimaryKey().getPort() == DefaultServerPortNumbers.HTTPS.getPortNumber() ||
+                info.getPrimaryKey().getPort() == DefaultServerPortNumbers.HTTP8080.getPortNumber()) {
+                results.add(checkSystemProperty(info.getInfo()));
+            }
+        }
+        List<String> filteredResults = results.stream().filter(x -> !x.isBlank()).toList();
+        return !filteredResults.isEmpty() ? filteredResults.getFirst() : "";
+    }
+
+    private static String checkSystemProperty(String info) {
+        String system = "";
+        String[] split = info.split("[\s\r\n]+");
+        int counter = 0;
+        String systemRegex = "^[(][a-zA-Z]+[)]$";
+        for (String s : split) {
+            if (s.equals("Server:")) {
+                counter++;
+            }
+            if (counter == 1) {
+                counter++;
+                continue;
+            }
+            if (counter == 2) {
+                if (s.matches(systemRegex)) {
+                    system = s.substring(1, s.length() - 1);
+                    break;
+                }
+            }
+        }
+        return system;
+    }
+
 
 }
