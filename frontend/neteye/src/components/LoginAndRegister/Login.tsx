@@ -1,9 +1,10 @@
 import * as React from 'react';
-import './Login.css';
+import './LoginAndRegister.css';
 import axios from 'axios';
 import * as Yup from 'yup';
 import { Formik, FormikHelpers } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import endpointPrefix from '../misc/constants';
 
 
 export const Login = () => {
@@ -27,7 +28,7 @@ export const Login = () => {
       password: string;
     }>) => {
       let token = document.cookie.split('=');
-      axios.post('http://127.0.0.1:8080/account/login',{
+      axios.post(endpointPrefix + '/account/login',{
         "email": values.email,
         "password": values.password
       }, {
@@ -39,12 +40,12 @@ export const Login = () => {
     ).then(response => {
         alert("It will be added later");
     }).catch(error => {
-      document.getElementById("login-error").innerHTML = "Incorrect email or password";
+      document.getElementById("login-register-error").innerHTML = "Incorrect email or password";
     })
   };
 
   return(
-    <div className="login-form-container">
+    <div className="login-register-form-container">
       <Formik
                 initialValues={{
                     email: "",
@@ -57,17 +58,17 @@ export const Login = () => {
                 >
                     {({values,errors,touched, handleSubmit, handleChange, handleBlur}) => {
                         return (
-    <div className="login-auth-form-container">
+    <div className="login-register-auth-form-container">
         <h2>Login</h2>
-        <form className="login-form" onSubmit={handleSubmit}>
-            <label className="login-label" htmlFor="email">Email</label>
-            <input className="login-input" value={values.email} onChange={handleChange("email")} onBlur={handleBlur("email")} type="text" placeholder="youremail@mail.com" id="email" name="email" />
-            <div className='login-errors'>{touched.email && errors.email}</div>
-            <label className="login-label" htmlFor="password">Password</label>
-            <input className="login-input" value={values.password} onChange={handleChange("password")} onBlur={handleBlur("password")} type="password" placeholder="********" id="password" name="password" />
-            <div className='login-errors'>{touched.password && errors.password}</div>
-            <button className="login-button btn btn-dark btn-outline-danger" ><span className="login-button-text">Log In</span></button>
-            <div className='login-errors' id='login-error'></div>
+        <form className="login-register-form" onSubmit={handleSubmit}>
+            <label className="login-register-label" htmlFor="email">Email</label>
+            <input className="login-register-input" value={values.email} onChange={handleChange("email")} onBlur={handleBlur("email")} type="text" placeholder="youremail@mail.com" id="email" name="email" />
+            <div className='login-register-errors'>{touched.email && errors.email}</div>
+            <label className="login-register-label" htmlFor="password">Password</label>
+            <input className="login-register-input" value={values.password} onChange={handleChange("password")} onBlur={handleBlur("password")} type="password" placeholder="********" id="password" name="password" />
+            <div className='login-register-errors'>{touched.password && errors.password}</div>
+            <button className="login-register-button btn btn-dark btn-outline-danger" ><span className="login-register-button-text">Log In</span></button>
+            <div className='login-register-errors' id='login-register-error'></div>
         </form>
         <button className="login-register-btn" onClick={() => navigate("/register")}>Don't have an account? Register here.</button>
     </div> 

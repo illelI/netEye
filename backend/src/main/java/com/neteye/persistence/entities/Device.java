@@ -20,6 +20,8 @@ public class Device {
     private String hostname;
     @Indexed
     private String location;
+    @Indexed
     private String system;
+    @Indexed
     private String typeOfDevice;
 }

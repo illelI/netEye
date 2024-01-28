@@ -1,4 +1,4 @@
-.register-form-container {
+.login-register-form-container {
     text-align: center;
     display: flex;
     align-items: center;
@@ -8,27 +8,27 @@
     background-color: rgb(18, 19, 20);
 }
 
-.register-auth-form-container {
+.login-register-auth-form-container {
     border: solid 2px;
     border-radius: 5%;
     padding: 3% 3% 3% 3%;
     background-color: rgb(23, 30, 36);
 }
 
-.register-form {
+.login-register-form {
     display: flex;
     flex-direction: column;
 }
 
-.register-button, .register-input {
+.login-register-button, .login-register-input {
     margin: 5px 5px 5px 5px;
 }
 
-.register-button:hover {
+.login-register-button:hover {
     color: rgb(33,37,41) !important;
 }
 
-.register-input {
+.login-register-input {
     border: solid 1px;
     border-color: rgb(220,53,69);
     background-color: rgb(33,37,41);
@@ -36,27 +36,27 @@
     border-radius: 5px;
 }
 
-.register-input:focus-visible {
+.login-register-input:focus-visible {
     outline: solid 1px crimson;
 }
 
-.register-button-text {
+.login-register-button-text {
     font-weight: 600;
 }
 
-.register-login-btn {
+.login-register-btn {
     border: none;
     color: rgb(220,53,69);
     background: none;
     text-decoration: underline;
 }
 
-.register-errors {
+.login-register-errors {
     font-size: x-small;
     text-align: left;
     margin-left: 2%;
 }
 
-#register-error {
+#login-register-error {
     font-size: medium;
 }
