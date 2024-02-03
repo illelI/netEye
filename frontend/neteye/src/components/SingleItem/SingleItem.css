@@ -1,0 +1,44 @@
+.SingleItem {
+    overflow: hidden;
+    border: 2px solid rgb(220,53,69);
+    width: 30%;
+    margin: 1% 30%;
+    background-color: rgb(43,48,53);
+    color: rgb( 220,53,69);
+}
+
+.ip {
+    text-align: left;
+    margin-left: 3%;
+    margin-top: 2%;
+}
+
+.column {
+    box-sizing: border-box;
+    position: flex;
+    float: left;
+    text-align: left;
+    width: 50%;
+}
+
+.infoList {
+    text-align: left;
+    list-style: none;
+    padding: 0;
+    margin-left: 3%;
+}
+
+.infoList li {
+    margin-left: 3%;
+}
+
+.portBox {
+    position: relative;
+    float: left;
+    margin: 2%;
+    color: rgb(43,48,53);
+    width: 10%;
+    height: 10%;
+    text-align: center;
+    background-color: rgb( 220,53,69);
+}

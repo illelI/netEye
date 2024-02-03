@@ -28,7 +28,7 @@ public class DeviceController {
     }
 
     @GetMapping("/find")
-    public List<Device> findDevices(@RequestParam("conditions") String searchConditions, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int pageSize) {
+    public List<Device> findDevices(@RequestParam("criteria") String searchConditions, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Device> devicePage = deviceService.searchDevices(searchConditions, pageable);
         return devicePage.getContent();

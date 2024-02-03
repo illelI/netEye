@@ -1,11 +1,32 @@
 import * as React from 'react';
 import './AppNavbar.css';
-import {Button, Form, Navbar} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useState } from 'react';
+import endpointPrefix from '../misc/constants';
 
 export const AppNavbar = () => {
 
+  const [searchCriteria, setSearchCriteria] = useState('');
+
   const navigate = useNavigate();
+
+  const handleSubmit = async (e)  => {
+    e.preventDefault();
+    let response;
+    try {
+      response = await axios.get(endpointPrefix + `/device/find`, {
+        params: {
+          criteria: searchCriteria
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    navigate('/search', {
+      state: response.data}
+    );
+  };
 
   return (
   <div className='AppNavbar'>
@@ -14,8 +35,8 @@ export const AppNavbar = () => {
       <span className='navbar-name'>
         <h4 id='navbar-name-h4'>netEye</h4>
       </span>
-      <form className="d-flex navbar-form">
-        <input className="navbar-search form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+      <form className="d-flex navbar-form" onSubmit={handleSubmit}>
+        <input className="navbar-search form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" value={searchCriteria} onChange={(e) => setSearchCriteria(e.target.value)} />
         <button className="btn btn-outline-danger my-2 my-sm-0 navbar-button" type="submit">Search</button>
       </form>
       </div>

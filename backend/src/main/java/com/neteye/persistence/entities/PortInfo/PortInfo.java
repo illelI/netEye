@@ -2,6 +2,7 @@ package com.neteye.persistence.entities.PortInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -11,7 +12,10 @@ import org.springframework.data.cassandra.core.mapping.Table;
 public class PortInfo {
     @PrimaryKey
     private PortInfoPrimaryKey primaryKey;
+    @Indexed
     private String info;
+    @Indexed
     private String appName;
+    @Indexed
     private String appVersion;
 }

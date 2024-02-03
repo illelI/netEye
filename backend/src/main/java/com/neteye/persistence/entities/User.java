@@ -4,7 +4,6 @@ import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.neteye.utils.enums.AccountType;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,13 +19,13 @@ import java.util.UUID;
 @Setter
 public class User implements UserDetails {
     @PrimaryKey
+    private String email;
     private UUID id;
     private String firstName;
     private String lastName;
-    @Indexed
-    private String email;
     private String password;
     private AccountType accountType;
+
     public User(String firstName, String lastName, String email, String password, AccountType accountType) {
         this.id = Uuids.timeBased();
         this.firstName = firstName;

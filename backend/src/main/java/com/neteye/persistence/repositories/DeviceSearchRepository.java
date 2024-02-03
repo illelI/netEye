@@ -29,6 +29,9 @@ public class DeviceSearchRepository {
         List<CriteriaDefinition> criteriaDefinitions = new ArrayList<>();
 
         for (String key : criteria.keySet()) {
+            if (key.equals("info")) {
+                continue;
+            }
             criteriaDefinitions.add(Criteria.where(key).is(criteria.get(key)));
         }
 

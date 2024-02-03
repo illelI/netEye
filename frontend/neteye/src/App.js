@@ -1,16 +1,18 @@
 import './App.css';
-import Login from './components/Login/Login';
-import Register from './components/Register/Register'
+import Login from './components/LoginAndRegister/Login';
+import Register from './components/LoginAndRegister/Register'
 import Home from './components/Home/Home'
+import SearchResult from './components/SearchResult/SearchResult'
 import axios from 'axios';
 import { useEffect } from 'react';
 import React from 'react';
 import { Route, Routes, BrowserRouter} from 'react-router-dom';
+import endpointPrefix from './components/misc/constants';
 
 function App() {
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8080/api/v1/csrf', 
+    axios.get(endpointPrefix + '/api/v1/csrf', 
     {
       withCredentials: true
     })
@@ -30,6 +32,7 @@ function App() {
           <Route path='/' element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register />} />
+          <Route path='/search' element={<SearchResult />} />
         </Routes>
       </BrowserRouter>
     </div>

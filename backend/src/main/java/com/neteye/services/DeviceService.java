@@ -55,6 +55,8 @@ public class DeviceService {
             String[] keyValue = s.split(":");
             if (keyValue.length == 2) {
                 criteriaMap.put(keyValue[0], keyValue[1]);
+            } else {
+                criteriaMap.put("info", keyValue[0]);
             }
         }
         return deviceSearchRepository.findDevicesByRequestedCriteria(criteriaMap, pageable);
