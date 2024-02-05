@@ -30,6 +30,7 @@ public class DeviceService {
     }
 
     public DeviceDto findDeviceByIp(String ip) {
+        /*
         Optional<Device> deviceInfo = deviceRepository.findByIp(ip);
 
         if (deviceInfo.isEmpty()) {
@@ -44,8 +45,8 @@ public class DeviceService {
         deviceDto.setHostname(deviceInfo.get().getHostname());
         deviceDto.setLocation(deviceInfo.get().getLocation());
         deviceDto.setOperatingSystem(deviceInfo.get().getSystem());
-
-        return deviceDto;
+        */
+        return null; // deviceDto;
     }
 
     public Page<Device> searchDevices(String criteria, Pageable pageable) {

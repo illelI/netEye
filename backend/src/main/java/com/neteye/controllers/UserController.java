@@ -86,5 +86,5 @@ public class UserController {
     }
 
     public record GenericResponse(String response) {}
-    public record CurrentUser(UUID id, String email) {}
+    public record CurrentUser(Integer id, String email) {}
 }

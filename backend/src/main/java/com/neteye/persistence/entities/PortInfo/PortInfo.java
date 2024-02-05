@@ -1,21 +1,23 @@
 package com.neteye.persistence.entities.PortInfo;
 
+import com.neteye.persistence.entities.Device;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.cassandra.core.mapping.Indexed;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.hibernate.Length;
 
 @Data
 @AllArgsConstructor
-@Table
+@Entity
+@Table(name = "portinfo")
 public class PortInfo {
-    @PrimaryKey
+    @EmbeddedId
     private PortInfoPrimaryKey primaryKey;
-    @Indexed
+    @Column(length = Length.LONG32, columnDefinition = "text")
     private String info;
-    @Indexed
     private String appName;
-    @Indexed
     private String appVersion;
+    public PortInfo() {
+
+    }
 }

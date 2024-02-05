@@ -1,8 +1,5 @@
 package com.neteye.ServiceTests;
 
-import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.DriverTimeoutException;
 import com.neteye.persistence.dto.AccountUpdateDto;
 import com.neteye.persistence.dto.UserDto;
 import com.neteye.persistence.entities.User;
@@ -28,7 +25,7 @@ class UserServiceTests {
     UserService userService;
     @Autowired
     UserRepository userRepository;
-
+    /*
     @BeforeAll
     static void setup() {
         CqlSessionBuilder builder = CqlSession.builder();
@@ -54,7 +51,7 @@ class UserServiceTests {
         } catch (DriverTimeoutException ex) {
             //
         }
-    }
+    } */
 
     @Test
     void contextLoad() {

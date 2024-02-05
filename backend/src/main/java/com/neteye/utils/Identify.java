@@ -1,10 +1,13 @@
 package com.neteye.utils;
 
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.model.CityResponse;
 import com.neteye.persistence.entities.PortInfo.PortInfo;
 import com.neteye.utils.enums.DefaultServerPortNumbers;
 import com.neteye.utils.enums.commonServers.FtpServers;
 import com.neteye.utils.enums.commonServers.SmtpServers;
 import com.neteye.utils.enums.commonServers.WwwServers;
+import com.neteye.utils.misc.IpAddress;
 import com.neteye.utils.misc.ServiceInfo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.net.ftp.FTPClient;
@@ -13,17 +16,22 @@ import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.smtp.SMTPClient;
 import org.apache.commons.net.telnet.TelnetClient;
 
+import javax.net.ssl.*;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Log4j2
 public class Identify {
-    private static final int CONNECTION_TIMEOUT = 60000;
+    private static final int CONNECTION_TIMEOUT = 30000;
 
     private Identify() {}
     public static ServiceInfo fetchPortInfo(ServiceInfo info) {
@@ -148,12 +156,8 @@ public class Identify {
             if(info.getPort() == DefaultServerPortNumbers.HTTPS) {
                 urlString = "https://" + info.getIp().getHostName();
             }
-            URI uri = new URI(urlString);
-            URL url = uri.toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-            conn.setReadTimeout(CONNECTION_TIMEOUT);
-            Map<String, List<String>> headerFields = conn.getHeaderFields();
+
+            Map<String, List<String>> headerFields = getStringListMap(info, urlString);
 
             for (Map.Entry<String, List<String>> entry : headerFields.entrySet()) {
                 if (entry.getKey() != null) {
@@ -172,10 +176,57 @@ public class Identify {
                 checkMostPopularWwwServers(info, headerFields.get("Server").getFirst());
             }
 
+
         } catch (Exception ignored) {
             //insignificant exception
         }
         return info;
+    }
+
+    private static Map<String, List<String>> getStringListMap(ServiceInfo info, String urlString) throws URISyntaxException, IOException {
+        URI uri = new URI(urlString);
+        URL url = uri.toURL();
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        if (info.getPort() == DefaultServerPortNumbers.HTTPS) {
+            conn = (HttpsURLConnection) url.openConnection();
+            ((HttpsURLConnection) conn).setSSLSocketFactory(getTrustAllSSLSocketFactory());
+            ((HttpsURLConnection) conn).setHostnameVerifier(getTrustAllHostnameVerifier());
+        }
+
+        conn.setConnectTimeout(CONNECTION_TIMEOUT);
+        conn.setReadTimeout(CONNECTION_TIMEOUT);
+        return conn.getHeaderFields();
+    }
+
+    private static SSLSocketFactory getTrustAllSSLSocketFactory() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            return sslContext.getSocketFactory();
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
+    }
+
+    private static HostnameVerifier getTrustAllHostnameVerifier() {
+        return (hostname, session) -> true;
     }
 
     private static void checkMostPopularWwwServers(ServiceInfo info, String server) {
@@ -270,6 +321,21 @@ public class Identify {
             }
         }
         return system;
+    }
+
+    public static String getLocation(IpAddress address) {
+        String location = "";
+        try {
+            String path = System.getProperty("user.dir");
+            File database = new File(path.replace('\\', '/') + "/GeoLite2-City_20240202/GeoLite2-City.mmdb");
+            try (DatabaseReader dbReader = new DatabaseReader.Builder(database).build()) {
+                CityResponse response = dbReader.city(address.getIP());
+                location = response.getCity().getName() + ", " + response.getCountry().getName();
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return location;
     }
 
 

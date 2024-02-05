@@ -11,6 +11,7 @@ import com.neteye.utils.enums.DefaultServerPortNumbers;
 import com.neteye.utils.misc.ServiceInfo;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
@@ -37,6 +38,7 @@ public class DeviceSearcher {
     private int numberOfThreads = 10000;
     private AtomicInteger howManyThreadsLeft;
 
+    @Autowired
     public DeviceSearcher(DeviceRepository deviceRepository, PortInfoRepository portInfoRepository) {
         this.deviceRepository = deviceRepository;
         this.portInfoRepository = portInfoRepository;
@@ -98,6 +100,7 @@ public class DeviceSearcher {
             }
             catch (Exception e) {
                 //there will be a lot of insignificant exceptions
+                log.error(e);
             } finally {
                 currentAddress.increment();
             }
@@ -135,17 +138,14 @@ public class DeviceSearcher {
             hostname = "";
         }
         portInfoRepository.saveAll(portInfos);
-        List<Integer> openedPorts = portInfos.stream()
-                .map(portInfo -> portInfo.getPrimaryKey().getPort())
-                .toList();
 
         String system = Identify.getOperatingSystem(portInfos);
-        String location = "";
+        String location = Identify.getLocation(ipAddress);
         String typeOfDevice = Identify.checkIfDeviceIsCamera(ipAddress.toString()) ? "camera" : "server";
 
         deviceRepository.save(new Device(
                 ipAddress.toString(),
-                openedPorts,
+                portInfos,
                 hostname,
                 location,
                 system,

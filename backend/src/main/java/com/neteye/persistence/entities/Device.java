@@ -1,25 +1,27 @@
 package com.neteye.persistence.entities;
 
+import com.neteye.persistence.entities.PortInfo.PortInfo;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.cassandra.core.mapping.Indexed;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-@Table
+@Entity
+@Table(name = "device")
 public class Device {
-    @PrimaryKey
+    @Id
     private String ip;
-    @Indexed
-    private List<Integer> openedPorts;
-    @Indexed
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<PortInfo> openedPorts;
     private String hostname;
-    @Indexed
     private String location;
     private String system;
     private String typeOfDevice;
+
+    public Device() {
+
+    }
 }

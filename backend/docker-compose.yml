@@ -1,7 +1,15 @@
-version: '3.9'
+version: '3.8'
 services:
-  cassandraNetEye:
-    image: cassandra:4.1.0
-    container_name: cassandraNetEye
+  db:
+    image: postgres:latest
+    restart: always
     ports:
-      - "9042:9042"
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local

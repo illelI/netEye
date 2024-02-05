@@ -1,33 +1,31 @@
 package com.neteye.persistence.entities;
 
-import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.neteye.utils.enums.AccountType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 
-@Table
+@Entity
+@Table(name = "users")
 @Getter
 @Setter
 public class User implements UserDetails {
-    @PrimaryKey
+    @Id
     private String email;
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
     private String firstName;
     private String lastName;
     private String password;
     private AccountType accountType;
 
     public User(String firstName, String lastName, String email, String password, AccountType accountType) {
-        this.id = Uuids.timeBased();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -36,7 +34,6 @@ public class User implements UserDetails {
     }
 
     public User(String firstName, String lastName, String email, String password) {
-        this.id = Uuids.timeBased();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -45,7 +42,6 @@ public class User implements UserDetails {
     }
 
     public User() {
-        this.id = Uuids.timeBased();
         this.accountType = AccountType.USER;
     }
 

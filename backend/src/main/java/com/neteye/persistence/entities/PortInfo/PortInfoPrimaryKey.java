@@ -1,17 +1,19 @@
 package com.neteye.persistence.entities.PortInfo;
 
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-@PrimaryKeyClass
-public class PortInfoPrimaryKey {
-    @PrimaryKeyColumn(name = "ip", type = PrimaryKeyType.PARTITIONED)
+@Embeddable
+public class PortInfoPrimaryKey implements Serializable {
     private String ip;
-    @PrimaryKeyColumn(name = "port", type = PrimaryKeyType.CLUSTERED)
     private int port;
+
+    public PortInfoPrimaryKey() {
+
+    }
 }

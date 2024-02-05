@@ -1,28 +1,14 @@
 package com.neteye.ControllerTests;
 
-import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.DriverTimeoutException;
-import com.neteye.config.SecurityConfig;
 import com.neteye.services.UserService;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.net.InetSocketAddress;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -40,7 +26,7 @@ class UserControllerTest {
 
     @MockBean
     UserService userService;
-
+    /*
     @BeforeAll
     static void setup() {
         CqlSessionBuilder builder = CqlSession.builder();
@@ -54,6 +40,7 @@ class UserControllerTest {
         System.setProperty("spring.cassandra.local-datacenter", "datacenter1");
         System.setProperty("spring.cassandra.schema-action", "create_if_not_exists");
     }
+     */
 
     //@BeforeEach
     void mockMvcSetUp() {
@@ -64,7 +51,7 @@ class UserControllerTest {
     }
 
 
-
+    /*
     @AfterAll
     static void flushDB() {
         try {
@@ -76,7 +63,7 @@ class UserControllerTest {
         } catch (DriverTimeoutException ex) {
             //
         }
-    }
+    } */
 
     @Test
     void contextLoad() {
