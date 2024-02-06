@@ -11,21 +11,8 @@ export const AppNavbar = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e)  => {
-    e.preventDefault();
-    let response;
-    try {
-      response = await axios.get(endpointPrefix + `/device/find`, {
-        params: {
-          criteria: searchCriteria
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    navigate('/search', {
-      state: response.data}
-    );
+  const handleSubmit = ()  => {
+    navigate('/search/' + searchCriteria);
   };
 
   return (

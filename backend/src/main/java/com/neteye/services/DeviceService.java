@@ -30,23 +30,23 @@ public class DeviceService {
     }
 
     public DeviceDto findDeviceByIp(String ip) {
-        /*
+
         Optional<Device> deviceInfo = deviceRepository.findByIp(ip);
 
         if (deviceInfo.isEmpty()) {
             throw new NotFoundException("Device with this ip not found");
         }
-        List<PortInfo> portInfos = portInfoRepository.findPortInfoById(ip);
+
         DeviceDto deviceDto = new DeviceDto();
 
         deviceDto.setIp(ip);
-        deviceDto.setPortInfo(PortInfoMapper.toDto(portInfos));
+        deviceDto.setPortInfo(PortInfoMapper.toDto(deviceInfo.get().getOpenedPorts()));
         deviceDto.setTypeOfDevice(deviceInfo.get().getTypeOfDevice());
         deviceDto.setHostname(deviceInfo.get().getHostname());
         deviceDto.setLocation(deviceInfo.get().getLocation());
-        deviceDto.setOperatingSystem(deviceInfo.get().getSystem());
-        */
-        return null; // deviceDto;
+        deviceDto.setSystem(deviceInfo.get().getSystem());
+
+        return deviceDto;
     }
 
     public Page<Device> searchDevices(String criteria, Pageable pageable) {

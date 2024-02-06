@@ -1,9 +1,12 @@
 import * as React from 'react';
 import './SingleItem.css';
 import { Device } from '../misc/device';
+import { useNavigate } from 'react-router-dom';
 
 
 const SingleItem = (data : Device) => {
+
+  const navigate = useNavigate();
 
   let hostname: React.ReactElement = <></>;
   let location: React.ReactElement = <></>;
@@ -16,20 +19,25 @@ const SingleItem = (data : Device) => {
   }
 
   if (data.location != "") {
+    location = <span>Location: {data.location}</span>
   }
 
   if (data.system != "" && data.system != undefined) {
     system = <span>OS: {data.system}</span>
   }
   
-  for (let port of data.openedPorts) {
+  for (let openedPort of data.portInfo) {
     openedPorts.push(
-      <div className='portBox'>{port}</div>
+      <div className='portBox'>{openedPort.port}</div>
     )
   }
 
+  const handleClick = () => {
+    navigate("/device/" + data.ip)
+  }
+
   return (
-  <div className="SingleItem">
+  <div className="SingleItem" onClick={handleClick}>
     <h4 className='ip'>{data.ip}</h4>
     <div className='column'>
     <ul className='infoList'>

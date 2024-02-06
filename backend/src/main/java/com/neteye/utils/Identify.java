@@ -31,7 +31,7 @@ import java.util.Map;
 
 @Log4j2
 public class Identify {
-    private static final int CONNECTION_TIMEOUT = 30000;
+    private static final int CONNECTION_TIMEOUT = 10000;
 
     private Identify() {}
     public static ServiceInfo fetchPortInfo(ServiceInfo info) {
@@ -280,7 +280,7 @@ public class Identify {
 
             int response = connection.getResponseCode() / 100;
 
-            return response == 2;
+            return response == 2 && connection.getURL().toString().endsWith("/onvif");
 
         } catch (Exception e) {
             return false;

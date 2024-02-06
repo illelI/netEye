@@ -10,7 +10,7 @@ public class DeviceMapper {
         dto.setPortInfo(PortInfoMapper.toDto(device.getOpenedPorts()));
         dto.setHostname(device.getHostname());
         dto.setLocation(device.getLocation());
-        dto.setOperatingSystem(device.getSystem());
+        dto.setSystem(device.getSystem());
         dto.setTypeOfDevice(device.getTypeOfDevice());
         return dto;
     }

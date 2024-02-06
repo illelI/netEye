@@ -18,14 +18,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.stream.Collectors;
 
 @Component
 @Log4j2
@@ -92,7 +91,10 @@ public class DeviceSearcher {
             try {
                 inetAddress = currentAddress.getIP();
                 if(inetAddress.isReachable(700)) {
-                    List<PortInfo> foundPorts = lookForOpenPorts(currentAddress);
+                    List<PortInfo> foundPorts = Arrays.stream(DefaultServerPortNumbers.values()).parallel()
+                            .map(portNumber -> scanPort(currentAddress, portNumber))
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
                     if (!foundPorts.isEmpty()) {
                         saveToDb(currentAddress, foundPorts);
                     }
@@ -106,6 +108,24 @@ public class DeviceSearcher {
             }
         }
         howManyThreadsLeft.decrementAndGet();
+    }
+
+    private PortInfo scanPort(IpAddress ip, DefaultServerPortNumbers port) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(ip.getIP(), port.getPortNumber()), 700);
+            if (socket.isConnected()) {
+                ServiceInfo serviceInfo = new ServiceInfo(ip.getIP(), port);
+                serviceInfo = Identify.fetchPortInfo(serviceInfo);
+                return new PortInfo(
+                        new PortInfoPrimaryKey(ip.toString(), port.getPortNumber()),
+                        serviceInfo.getInfo(),
+                        serviceInfo.getAppName(),
+                        serviceInfo.getVersion()
+                );
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     private List<PortInfo> lookForOpenPorts(IpAddress currentIp) {

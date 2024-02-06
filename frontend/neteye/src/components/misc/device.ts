@@ -1,6 +1,8 @@
+import { Port } from "./port";
+
 export interface Device {
     ip: string;
-    openedPorts: number[];
+    portInfo: Port[];
     hostname?: string;
     location?: string;
     system?: string;

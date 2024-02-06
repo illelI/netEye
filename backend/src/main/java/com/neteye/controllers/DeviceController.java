@@ -32,7 +32,6 @@ public class DeviceController {
     public List<DeviceDto> findDevices(@RequestParam("criteria") String searchConditions, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Device> devicePage = deviceService.searchDevices(searchConditions, pageable);
-
         return devicePage.getContent().stream()
                 .map(DeviceMapper::toDto)
                 .toList();

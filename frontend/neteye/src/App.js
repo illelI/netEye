@@ -2,6 +2,7 @@ import './App.css';
 import Login from './components/LoginAndRegister/Login';
 import Register from './components/LoginAndRegister/Register'
 import Home from './components/Home/Home'
+import DevicePage from './components/DevicePage/DevicePage'
 import SearchResult from './components/SearchResult/SearchResult'
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -32,7 +33,8 @@ function App() {
           <Route path='/' element={<Home/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register />} />
-          <Route path='/search' element={<SearchResult />} />
+          <Route path='/search/:criteria' element={<SearchResult />} />
+          <Route path='/device/:ip' element={<DevicePage />} />
         </Routes>
       </BrowserRouter>
     </div>
