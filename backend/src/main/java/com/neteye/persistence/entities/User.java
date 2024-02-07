@@ -1,5 +1,6 @@
 package com.neteye.persistence.entities;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.neteye.utils.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -18,8 +20,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     private String email;
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String password;
@@ -31,6 +32,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.accountType = accountType;
+        this.id = UuidCreator.getTimeBased();
     }
 
     public User(String firstName, String lastName, String email, String password) {
@@ -39,10 +41,12 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.accountType = AccountType.USER;
+        this.id = UuidCreator.getTimeBased();
     }
 
     public User() {
         this.accountType = AccountType.USER;
+        this.id = UuidCreator.getTimeBased();
     }
 
     @Override

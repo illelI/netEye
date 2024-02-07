@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,5 +85,5 @@ public class UserController {
     }
 
     public record GenericResponse(String response) {}
-    public record CurrentUser(Integer id, String email) {}
+    public record CurrentUser(UUID id, String email) {}
 }

@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import React from 'react';
 import { Route, Routes, BrowserRouter} from 'react-router-dom';
 import endpointPrefix from './components/misc/constants';
+import { AuthProvider } from './components/context/AuthContext';
 
 function App() {
 
@@ -25,8 +26,10 @@ function App() {
       })
   }, []);
 
+
   return (
     <React.StrictMode>
+      <AuthProvider>
     <div className="App">
       <BrowserRouter>
         <Routes>
@@ -38,6 +41,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </div>
+    </AuthProvider>
     </React.StrictMode>
   );
 }

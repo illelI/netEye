@@ -33,32 +33,28 @@ import java.util.Map;
 public class Identify {
     private static final int CONNECTION_TIMEOUT = 10000;
 
+    private static final String PATH = System.getProperty("user.dir");
+    private static final File DATABASE = new File(PATH.replace('\\', '/') + "/GeoLite2-City_20240202/GeoLite2-City.mmdb");
+    private static final DatabaseReader DB_READER;
+
+    static {
+        try {
+            DB_READER = new DatabaseReader.Builder(DATABASE).build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Identify() {}
     public static ServiceInfo fetchPortInfo(ServiceInfo info) {
         return switch (info.getPort()) {
             case FTP -> getFtpBanner(info);
-            case SSH -> getSshBanner(info);
             case TELNET -> getTelnetBanner(info);
             case SMTP -> getSmtpBanner(info);
-            case DNS -> getDnsBanner(info);
             case HTTP, HTTP8080, HTTPS -> getHttpBanner(info);
             case POP3 -> getPop3Banner(info);
             case IMAP -> getImapBanner(info);
-            case SNMP -> getSnmpBanner(info);
         };
-    }
-
-    private static ServiceInfo getSshBanner(ServiceInfo info) {
-
-        return info;
-    }
-
-    private static ServiceInfo getDnsBanner(ServiceInfo info) {
-        return info;
-    }
-
-    private static ServiceInfo getSnmpBanner(ServiceInfo info) {
-        return info;
     }
 
     private static ServiceInfo getPop3Banner(ServiceInfo info) {
@@ -326,14 +322,13 @@ public class Identify {
     public static String getLocation(IpAddress address) {
         String location = "";
         try {
-            String path = System.getProperty("user.dir");
-            File database = new File(path.replace('\\', '/') + "/GeoLite2-City_20240202/GeoLite2-City.mmdb");
-            try (DatabaseReader dbReader = new DatabaseReader.Builder(database).build()) {
-                CityResponse response = dbReader.city(address.getIP());
-                location = response.getCity().getName() + ", " + response.getCountry().getName();
+            CityResponse response = DB_READER.city(address.getIP());
+            location = response.getCity().getName() + ", " + response.getCountry().getName();
+            if (location.contains("null")) {
+                location = "";
             }
         } catch (Exception e) {
-            log.error(e);
+            //insignificant exception
         }
         return location;
     }

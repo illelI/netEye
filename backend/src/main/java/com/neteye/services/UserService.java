@@ -4,6 +4,7 @@ import com.neteye.persistence.dto.AccountUpdateDto;
 import com.neteye.persistence.dto.UserDto;
 import com.neteye.persistence.entities.User;
 import com.neteye.persistence.repositories.UserRepository;
+import com.neteye.utils.enums.AccountType;
 import com.neteye.utils.exceptions.UserAlreadyExistsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

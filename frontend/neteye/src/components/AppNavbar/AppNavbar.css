@@ -50,4 +50,13 @@
 
 #navbar-name-h4 {
     margin-top: 3%;
+    cursor: pointer;
+}
+
+.endDiv {
+    padding-right: 2%;
+}
+
+.userDiv {
+    color: white;
 }

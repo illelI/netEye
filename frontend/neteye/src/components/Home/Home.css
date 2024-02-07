@@ -1,1 +1,47 @@
-.Home {}
+.Home {
+    min-height: 100vh;
+    height: 100%;
+}
+
+.homeInfo {
+    min-width: 50vh;
+    width: 80%;
+    background-color: rgb(43,48,53) !important;
+    min-height: 80vh;
+    height: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 5%;
+    padding: 1%;
+    text-align: left;
+    color: rgb(190, 193, 196);
+    flex: 1;
+}
+
+.queryExample {
+    background-color: rgb(68, 71, 73);
+    padding: 0.5rem;
+    margin: 2rem 0;
+}
+
+.Home label {
+    margin: 1rem 0;
+}
+
+.Home p {
+    margin-bottom: 2rem;
+}
+
+.Home table {
+    width: 80%;
+    border-collapse: collapse;
+}
+
+.filterColumn {
+    width: 20%;
+}
+
+.Home td, .Home th {
+    padding: 1% 0;
+    border-bottom: 1px solid rgb(88, 93, 99);
+}

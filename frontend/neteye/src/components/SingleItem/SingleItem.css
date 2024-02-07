@@ -1,10 +1,11 @@
 .SingleItem {
     overflow: hidden;
     border: 2px solid rgb(220,53,69);
-    width: 30%;
-    margin: 1% 30%;
+    width: 35%;
+    margin: 1% 32.5%;
     background-color: rgb(43,48,53);
     color: rgb( 220,53,69);
+    cursor: pointer;
 }
 
 .ip {
@@ -41,4 +42,8 @@
     height: 10%;
     text-align: center;
     background-color: rgb( 220,53,69);
+}
+
+.userMenu {
+    display: block;
 }

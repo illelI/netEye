@@ -4,22 +4,60 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
 import endpointPrefix from '../misc/constants';
-
+import { useAuth } from '../context/AuthContext';
+import 'bootstrap/dist/css/bootstrap.css';
 export const AppNavbar = () => {
 
   const [searchCriteria, setSearchCriteria] = useState('');
+  const {user, logout} = useAuth();
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const navigate = useNavigate();
+  
+  let userDiv: React.ReactElement = <></>
+
+  const nameClicked = () => {
+    navigate('/');
+  }
 
   const handleSubmit = ()  => {
     navigate('/search/' + searchCriteria);
   };
 
+const handleLogout = () => {
+  axios.post(endpointPrefix + '/account/logout', {}, {
+    withCredentials: true
+  });
+  logout();
+  navigate('/');
+}
+
+  
+
+if (user != null && user.email) {
+  userDiv = <div className="dropdown userDiv">
+  <button className="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={handleToggle}>
+  {user.email}
+  </button>
+  {isExpanded && (
+        <div className='dropdown-menu userMenu'>
+        <a className='dropdown-item '>My account</a>
+        <a className='dropdown-item' onClick={handleLogout}>Logout</a>
+      </div> 
+      )}
+</div>
+} 
+
   return (
   <div className='AppNavbar'>
     <nav className="navbar navbar-dark bg-dark">
       <div className='flex-start'>
-      <span className='navbar-name'>
+      <span className='navbar-name' onClick={nameClicked}>
         <h4 id='navbar-name-h4'>netEye</h4>
       </span>
       <form className="d-flex navbar-form" onSubmit={handleSubmit}>
@@ -27,9 +65,10 @@ export const AppNavbar = () => {
         <button className="btn btn-outline-danger my-2 my-sm-0 navbar-button" type="submit">Search</button>
       </form>
       </div>
-      <div className='flex-end'>
-      <button className="navbar-button btn btn-dark btn-outline-danger" onClick={() => navigate("/login")} >Sign in</button>
-      <button className="navbar-button btn btn-dark btn-outline-danger" onClick={() => navigate("/register")} >Sign up</button>
+      <div className='flex-end endDiv'>
+      {user ? userDiv :
+      <div><button className="navbar-button btn btn-dark btn-outline-danger" onClick={() => navigate("/login")} >Sign in</button>
+      <button className="navbar-button btn btn-dark btn-outline-danger" onClick={() => navigate("/register")} >Sign up</button></div> }
       </div>
     </nav>
   </div>

@@ -30,7 +30,6 @@ public class DeviceSearcher {
     private final DeviceRepository deviceRepository;
     private final PortInfoRepository portInfoRepository;
 
-
     @Setter
     private int numberOfThreads = 10000;
     private AtomicLong howManyIpsLeft;
@@ -40,8 +39,6 @@ public class DeviceSearcher {
         this.deviceRepository = deviceRepository;
         this.portInfoRepository = portInfoRepository;
     }
-
-
 
     public void search(Map<String, String> searchProperties) throws InterruptedException {
         IpAddress lastAddress;
@@ -111,7 +108,7 @@ public class DeviceSearcher {
                 );
             }
         } catch (Exception e) {
-            log.error(e);
+            //there will be a lot of insignificant exceptions
         }
         return null;
     }
@@ -127,7 +124,7 @@ public class DeviceSearcher {
 
         String system = Identify.getOperatingSystem(portInfos);
         String location = Identify.getLocation(ipAddress);
-        String typeOfDevice = Identify.checkIfDeviceIsCamera(ipAddress.toString()) ? "camera" : "server";
+        String typeOfDevice = Identify.checkIfDeviceIsCamera(ipAddress.toString()) ? "Camera" : "Server";
 
         deviceRepository.save(new Device(
                 ipAddress.toString(),

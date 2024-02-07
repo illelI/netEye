@@ -61,11 +61,12 @@ public class DeviceSearchRepository {
             String columnName = entry.getKey();
             String value = entry.getValue();
 
-
             switch (columnName) {
                 case "port" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(openedPortsJoin.get("primaryKey").get(columnName), value));
                 case "info" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(openedPortsJoin.get(columnName), "%" + value + "%"));
                 case "appName", "appVersion" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(openedPortsJoin.get(columnName), value));
+                case "type" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("typeOfDevice"), value));
+                case "location" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get(columnName), "%" + value + "%"));
                 default ->
                         predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(columnName), value));
             }

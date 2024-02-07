@@ -5,10 +5,12 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import endpointPrefix from '../misc/constants';
+import { useAuth } from '../context/AuthContext';
 
 export const Register = () => {
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -55,7 +57,8 @@ export const Register = () => {
           'Content-Type':'application/json',
       }}
     ).then(response => {
-        alert("It will be added later");
+        login(response.data);
+        navigate('/');
     }).catch(error => {
       document.getElementById("login-register-error").innerHTML = "User with this email already exist";
     })

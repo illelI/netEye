@@ -33,4 +33,10 @@ public class ExceptionHandlerConfig extends ResponseEntityExceptionHandler {
         logger.error("UsernameNotFoundException occurred");
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleOtherExceptions(RuntimeException ex, WebRequest request) {
+        logger.error("Exception occurred");
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
 }
