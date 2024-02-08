@@ -4,6 +4,7 @@ import com.neteye.persistence.dto.DeviceDto;
 import com.neteye.persistence.entities.Device;
 import com.neteye.services.DeviceService;
 import com.neteye.utils.mappers.DeviceMapper;
+import com.neteye.utils.misc.SearchResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/device")
@@ -29,12 +28,20 @@ public class DeviceController {
     }
 
     @GetMapping("/find")
-    public List<DeviceDto> findDevices(@RequestParam("criteria") String searchConditions, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int pageSize) {
+    public SearchResult findDevices(@RequestParam("criteria") String searchConditions, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "15") int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Device> devicePage = deviceService.searchDevices(searchConditions, pageable);
-        return devicePage.getContent().stream()
-                .map(DeviceMapper::toDto)
-                .toList();
+        SearchResult searchResult = new SearchResult();
+        searchResult.setNumberOfPages(devicePage.getTotalPages());
+        searchResult.setNumberOfFoundDevices(devicePage.getTotalElements());
+        searchResult.setQuery(searchConditions);
+        searchResult.setCurrentPage(devicePage.getNumber());
+        searchResult.setDevices(
+                devicePage.getContent().stream()
+                    .map(DeviceMapper::toDto)
+                    .toList()
+        );
+        return searchResult;
     }
 
 }

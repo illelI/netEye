@@ -70,7 +70,7 @@ export const Login = () => {
             <label className="login-register-label" htmlFor="password">Password</label>
             <input className="login-register-input" value={values.password} onChange={handleChange("password")} onBlur={handleBlur("password")} type="password" placeholder="********" id="password" name="password" />
             <div className='login-register-errors'>{touched.password && errors.password}</div>
-            <button className="login-register-button btn btn-dark btn-outline-danger" ><span className="login-register-button-text">Log In</span></button>
+            <button className="login-register-button login-register-btn-styled btn btn-dark" ><span className="login-register-button-text">Log In</span></button>
             <div className='login-register-errors' id='login-register-error'></div>
         </form>
         <button className="login-register-btn" onClick={() => navigate("/register")}>Don't have an account? Register here.</button>

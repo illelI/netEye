@@ -62,12 +62,12 @@ if (user != null && user.email) {
       </span>
       <form className="d-flex navbar-form" onSubmit={handleSubmit}>
         <input className="navbar-search form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" value={searchCriteria} onChange={(e) => setSearchCriteria(e.target.value)} />
-        <button className="btn btn-outline-danger my-2 my-sm-0 navbar-button" type="submit">Search</button>
+        <button className="btn search-button my-2 my-sm-0 navbar-button" type="submit">Search</button>
       </form>
       </div>
       <div className='flex-end endDiv'>
       {user ? userDiv :
-      <div><button className="navbar-button btn btn-dark btn-outline-danger" onClick={() => navigate("/login")} >Sign in</button>
+      <div><button className="navbar-button btn btn-dark btn-outline-success" onClick={() => navigate("/login")} >Sign in</button>
       <button className="navbar-button btn btn-dark btn-outline-danger" onClick={() => navigate("/register")} >Sign up</button></div> }
       </div>
     </nav>

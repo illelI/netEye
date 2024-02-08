@@ -12,6 +12,10 @@ export const SearchResult = () => {
     const { criteria } = useParams();
     const [content, setContent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(null);
+    const [numberOfPages, setNumberOfPages] = useState(null);
+    const [foundedDevices, setFoundedDevices] = useState(null);
+    const [query, setQuery] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,9 +25,12 @@ export const SearchResult = () => {
                         criteria: criteria
                     }
                 });
-                setContent(response.data);
+                setContent(response.data.devices);
+                setCurrentPage(response.data.currentPage + 1);
+                setNumberOfPages(response.data.numberOfPages);
+                setFoundedDevices(response.data.numberOfFoundDevices);
+                setQuery(response.data.query);
             } catch {
-                console.log("dupa")
             } finally {
                 setLoading(false);
             }
@@ -63,6 +70,9 @@ export const SearchResult = () => {
     return (
         <div className="SearchResult">
             <AppNavbar />
+            <div>
+                
+            </div>
             {elementsArray}
         </div>
     )

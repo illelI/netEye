@@ -28,7 +28,7 @@ const SingleItem = (data : Device) => {
   
   for (let openedPort of data.portInfo) {
     openedPorts.push(
-      <div className='portBox'>{openedPort.port}</div>
+      <div className='portBox portBox-styled'>{openedPort.port}</div>
     )
   }
 

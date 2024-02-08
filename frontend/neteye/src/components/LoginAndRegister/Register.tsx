@@ -99,7 +99,7 @@ export const Register = () => {
             <label className="login-register-label" htmlFor="passwordConfirmation">Password confirmation</label>
             <input className="login-register-input" value={values.passwordConfirmation} onChange={handleChange("passwordConfirmation")} onBlur={handleBlur("passwordConfirmation")} type="password" placeholder="********" id="passwordConfirmation" name="passwordConfirmation" />
             <div className='login-register-errors'>{touched.passwordConfirmation && errors.passwordConfirmation}</div>
-            <button className="login-register-button btn btn-dark btn-outline-danger" type='submit'><span className="login-register-button-text">Register</span></button>
+            <button className="login-register-button btn btn-dark login-register-btn-styled" type='submit'><span className="login-register-button-text">Register</span></button>
             <div className='login-register-errors' id='login-register-error'></div>
         </form>
         <button className="login-register-btn" type="button" onClick={() => navigate("/login")}>Already have an account? Log in here.</button>
