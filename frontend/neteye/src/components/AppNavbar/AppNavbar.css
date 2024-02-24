@@ -77,3 +77,7 @@
     --bs-btn-disabled-border-color: rgb(190, 193, 196);
     --bs-gradient: none;
 }
+
+.dropdown-item {
+    cursor: pointer;
+}

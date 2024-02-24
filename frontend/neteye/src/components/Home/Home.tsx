@@ -29,6 +29,10 @@ export const Home = () => (
             <td>Device ip</td>
           </tr>
           <tr>
+            <td>ipRange</td>
+            <td>Devices with ip in given range</td>
+          </tr>
+          <tr>
             <td>port</td>
             <td>Opened port</td>
           </tr>
@@ -42,7 +46,7 @@ export const Home = () => (
           </tr>
           <tr>
             <td>type</td>
-            <td>Type of device, either server or camera. Note: the type of device is determined by its behavior on port 80. Depending on its software, the results may be incorrect</td>
+            <td>Type of device, either server or camera. Note: the type of device is determined by its behavior on port 554. Because of that some results may be inccorect.</td>
           </tr>
           <tr>
             <td>appName</td>

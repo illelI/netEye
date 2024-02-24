@@ -8,7 +8,8 @@ public enum DefaultServerPortNumbers {
     HTTP8080(8080),
     HTTPS(443),
     POP3(110),
-    IMAP(143);
+    IMAP(143),
+    RTSP(554);
 
     private final int portNumber;
     DefaultServerPortNumbers(final int portNumber) {

@@ -37,16 +37,26 @@ const handleLogout = () => {
   navigate('/');
 }
 
+const handleAccount = () => {
+  navigate('/account');
+}
+
+const handleAdmin = () => {
+  navigate('/adminPanel');
+}
+
   
 
 if (user != null && user.email) {
+  let acc = user.acc;
   userDiv = <div className="dropdown userDiv">
   <button className="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={handleToggle}>
   {user.email}
   </button>
   {isExpanded && (
         <div className='dropdown-menu userMenu'>
-        <a className='dropdown-item '>My account</a>
+        <a className='dropdown-item' onClick={handleAccount}>My account</a>
+        {acc === "ADMIN" ? <a className='dropdown-item' onClick={handleAdmin}>Admin panel</a> : <></>}
         <a className='dropdown-item' onClick={handleLogout}>Logout</a>
       </div> 
       )}

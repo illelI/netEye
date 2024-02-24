@@ -1,6 +1,6 @@
 package com.neteye.utils.enums.commonServers;
 
-public enum SmtpServers {
+public enum MailServers {
     POSTFIX("Postfix"),
     SENDMAIL("Sendmail"),
     MICROSOFT("Microsoft"),
@@ -10,7 +10,7 @@ public enum SmtpServers {
 
     private final String appName;
 
-    SmtpServers(String appName) {
+    MailServers(String appName) {
         this.appName = appName;
     }
 

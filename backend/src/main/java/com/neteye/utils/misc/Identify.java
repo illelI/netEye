@@ -1,14 +1,13 @@
-package com.neteye.utils;
+package com.neteye.utils.misc;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.model.CityResponse;
 import com.neteye.persistence.entities.PortInfo.PortInfo;
 import com.neteye.utils.enums.DefaultServerPortNumbers;
 import com.neteye.utils.enums.commonServers.FtpServers;
-import com.neteye.utils.enums.commonServers.SmtpServers;
+import com.neteye.utils.enums.commonServers.MailServers;
 import com.neteye.utils.enums.commonServers.WwwServers;
-import com.neteye.utils.misc.IpAddress;
-import com.neteye.utils.misc.ServiceInfo;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.imap.IMAPClient;
@@ -17,13 +16,9 @@ import org.apache.commons.net.smtp.SMTPClient;
 import org.apache.commons.net.telnet.TelnetClient;
 
 import javax.net.ssl.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +26,9 @@ import java.util.Map;
 
 @Log4j2
 public class Identify {
-    private static final int CONNECTION_TIMEOUT = 10000;
+
+    @Setter
+    private static int connectionTimeout = 10000;
 
     private static final String PATH = System.getProperty("user.dir");
     private static final File DATABASE = new File(PATH.replace('\\', '/') + "/GeoLite2-City_20240202/GeoLite2-City.mmdb");
@@ -54,15 +51,17 @@ public class Identify {
             case HTTP, HTTP8080, HTTPS -> getHttpBanner(info);
             case POP3 -> getPop3Banner(info);
             case IMAP -> getImapBanner(info);
+            case RTSP -> getRtspBanner(info);
         };
     }
 
     private static ServiceInfo getPop3Banner(ServiceInfo info) {
         try {
             POP3Client pop3Client = new POP3Client();
-            pop3Client.setDefaultTimeout(CONNECTION_TIMEOUT);
+            pop3Client.setDefaultTimeout(connectionTimeout);
             pop3Client.connect(info.getIp());
             info.setInfo(pop3Client.getReplyString());
+            checkMostPopularMailServers(info);
         } catch (Exception ignored) {
             //insignificant exception
         }
@@ -72,9 +71,10 @@ public class Identify {
     private static ServiceInfo getImapBanner(ServiceInfo info) {
         try {
             IMAPClient imapClient = new IMAPClient();
-            imapClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+            imapClient.setDefaultTimeout(connectionTimeout);
             imapClient.connect(info.getIp());
             info.setInfo(imapClient.getReplyString());
+            checkMostPopularMailServers(info);
         } catch (Exception ignored) {
             //insignificant exception
         }
@@ -84,7 +84,7 @@ public class Identify {
     private static ServiceInfo getTelnetBanner(ServiceInfo info) {
         try {
             TelnetClient telnetClient = new TelnetClient();
-            telnetClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+            telnetClient.setDefaultTimeout(connectionTimeout);
             telnetClient.connect(info.getIp());
 
             InputStream is = telnetClient.getInputStream();
@@ -101,19 +101,19 @@ public class Identify {
     private static ServiceInfo getSmtpBanner(ServiceInfo info) {
         try {
             SMTPClient smtpClient = new SMTPClient();
-            smtpClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+            smtpClient.setDefaultTimeout(connectionTimeout);
 
             smtpClient.connect(info.getIp());
             info.setInfo(smtpClient.getReplyString());
-            checkMostPopularSmtpServers(info);
+            checkMostPopularMailServers(info);
         } catch (Exception ignored) {
             //insignificant exception
         }
         return info;
     }
 
-    private static void checkMostPopularSmtpServers(ServiceInfo info) {
-        for (SmtpServers server : SmtpServers.values()) {
+    private static void checkMostPopularMailServers(ServiceInfo info) {
+        for (MailServers server : MailServers.values()) {
             if (info.getInfo().contains(server.getAppName())) {
                 info.setAppName(server.getAppName());
                 getAppVersion(info);
@@ -125,7 +125,7 @@ public class Identify {
     private static ServiceInfo getFtpBanner(ServiceInfo info) {
         try {
             FTPClient ftpClient = new FTPClient();
-            ftpClient.setDefaultTimeout(CONNECTION_TIMEOUT);
+            ftpClient.setDefaultTimeout(connectionTimeout);
 
             ftpClient.connect(info.getIp());
             info.setInfo(ftpClient.getReplyString());
@@ -143,6 +143,30 @@ public class Identify {
                 break;
             }
         }
+    }
+
+    private static ServiceInfo getRtspBanner(ServiceInfo info) {
+        String url = "rtsp://" + info.getIp().getHostName() + ":554";
+        try (Socket socket = new Socket(info.getIp().getHostAddress(), info.getPort().getPortNumber());
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            socket.setSoTimeout(connectionTimeout);
+            out.println("OPTIONS " + url + "/ RTSP/1.0");
+            out.println("CSeq: 1");
+            out.println("User-Agent: ");
+            out.println();
+
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null) {
+                response.append(line).append("\n");
+            }
+
+            info.setInfo(response.toString());
+        } catch (IOException e) {
+            //ignored
+        }
+        return info;
     }
 
     private static ServiceInfo getHttpBanner(ServiceInfo info) {
@@ -191,8 +215,8 @@ public class Identify {
             ((HttpsURLConnection) conn).setHostnameVerifier(getTrustAllHostnameVerifier());
         }
 
-        conn.setConnectTimeout(CONNECTION_TIMEOUT);
-        conn.setReadTimeout(CONNECTION_TIMEOUT);
+        conn.setConnectTimeout(connectionTimeout);
+        conn.setReadTimeout(connectionTimeout);
         return conn.getHeaderFields();
     }
 
@@ -213,7 +237,7 @@ public class Identify {
             };
 
             SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            sslContext.init(null, trustAllCerts, new SecureRandom());
             return sslContext.getSocketFactory();
         } catch (Exception e) {
             log.error(e);
@@ -256,30 +280,6 @@ public class Identify {
                 serviceInfo.setVersion(s);
                 break;
             }
-        }
-    }
-
-    public static boolean checkIfDeviceIsCamera(String ip) {
-        return checkIfDeviceRespondOnOnvifEndpoint("http", ip) || checkIfDeviceRespondOnOnvifEndpoint("https", ip);
-    }
-
-    private static boolean checkIfDeviceRespondOnOnvifEndpoint(String protocol, String ip) {
-        String urlString = protocol + "://" + ip + "/onvif";
-        try {
-            URI uri = new URI(urlString);
-            URL url = uri.toURL();
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setConnectTimeout(CONNECTION_TIMEOUT);
-            connection.setReadTimeout(CONNECTION_TIMEOUT);
-            connection.setRequestMethod("GET");
-
-            int response = connection.getResponseCode() / 100;
-
-            return response == 2 && connection.getURL().toString().endsWith("/onvif");
-
-        } catch (Exception e) {
-            return false;
         }
     }
 

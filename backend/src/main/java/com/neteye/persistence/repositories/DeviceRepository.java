@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, String> {
     Optional<Device> findByIp(String ip);
-
 }

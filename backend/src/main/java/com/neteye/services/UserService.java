@@ -20,6 +20,12 @@ public class UserService implements UserDetailsService {
     UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        if (userRepository.findByEmail("admin@neteye.com").isEmpty()) {
+            User admin = new User("admin", "admin", "admin@neteye.com",
+                    passwordEncoder.encode("admin"));
+            admin.setAccountType(AccountType.ADMIN);
+            userRepository.save(admin);
+        }
     }
 
     public User createUser(UserDto userDto) {
@@ -51,6 +57,10 @@ public class UserService implements UserDetailsService {
             existingUser.setPassword(accountDto.getPassword());
         }
         return userRepository.save(existingUser);
+    }
+
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 
 }

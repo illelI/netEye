@@ -1,8 +1,9 @@
 package com.neteye.persistence.entities;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import com.neteye.utils.enums.AccountType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 
 @Entity
@@ -20,7 +20,6 @@ import java.util.UUID;
 public class User implements UserDetails {
     @Id
     private String email;
-    private UUID id;
     private String firstName;
     private String lastName;
     private String password;
@@ -32,7 +31,6 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.accountType = accountType;
-        this.id = UuidCreator.getTimeBased();
     }
 
     public User(String firstName, String lastName, String email, String password) {
@@ -41,12 +39,10 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.accountType = AccountType.USER;
-        this.id = UuidCreator.getTimeBased();
     }
 
     public User() {
         this.accountType = AccountType.USER;
-        this.id = UuidCreator.getTimeBased();
     }
 
     @Override

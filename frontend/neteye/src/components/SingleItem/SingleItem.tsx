@@ -18,7 +18,7 @@ const SingleItem = (data : Device) => {
     hostname = <span>{data.hostname}</span>;
   }
 
-  if (data.location != "") {
+  if (data.location != "" && data.location != null && data.location != undefined) {
     location = <span>Location: {data.location}</span>
   }
 

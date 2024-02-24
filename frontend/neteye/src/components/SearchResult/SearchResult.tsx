@@ -66,12 +66,16 @@ export const SearchResult = () => {
         <SingleItem key={device.ip} {...device}/>
     ));
 
-
+    let resultsFound = <p className='pFounded'>Found {foundedDevices} devices for query: {query}</p>
+    if (foundedDevices == 1) {
+        resultsFound = <p className='pFounded'>Found {foundedDevices} device for query: {query}</p>
+    }
+    
     return (
         <div className="SearchResult">
             <AppNavbar />
             <div>
-                
+                {resultsFound}
             </div>
             {elementsArray}
         </div>

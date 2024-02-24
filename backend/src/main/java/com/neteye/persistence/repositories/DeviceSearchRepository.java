@@ -21,7 +21,6 @@ public class DeviceSearchRepository {
         this.entityManager = entityManager;
     }
 
-    //TODO pagination correction & query creation improvement
     public Page<Device> findDevicesByRequestedCriteria(Map<String, String> criteria, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Device> query = criteriaBuilder.createQuery(Device.class);
@@ -62,6 +61,11 @@ public class DeviceSearchRepository {
             String value = entry.getValue();
 
             switch (columnName) {
+                case "ipRange" -> {
+                    String[] range = value.split("-");
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.greaterThanOrEqualTo(root.get("ip"), range[0]));
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.lessThanOrEqualTo(root.get("ip"), range[1]));
+                }
                 case "port" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(openedPortsJoin.get("primaryKey").get(columnName), value));
                 case "info" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(openedPortsJoin.get(columnName), "%" + value + "%"));
                 case "appName", "appVersion" -> predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(openedPortsJoin.get(columnName), value));

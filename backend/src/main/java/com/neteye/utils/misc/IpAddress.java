@@ -114,7 +114,6 @@ public class IpAddress {
         long howManyInLast = (long) ( Math.pow(255, 3) * last.getAddress()[0] +
                 Math.pow(255, 2) * last.getAddress()[1] +
                 255L * last.getAddress()[2] + last.getAddress()[3]);
-
         return howManyInLast - howManyInFirst;
     }
 

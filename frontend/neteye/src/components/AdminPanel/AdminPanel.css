@@ -1,0 +1,103 @@
+.adminPanelDiv {
+    min-width: 50vh;
+    width: 80%;
+    background-color: rgb(43,48,53) !important;
+    min-height: 80vh;
+    height: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 5%;
+    padding: 1%;
+    text-align: left;
+    color: rgb(190, 193, 196);
+    flex: 1;
+}
+
+.scannerForm {
+    clear: both;
+}
+
+.adminInput {
+    border: solid 1px;
+    border-color: rgb(190, 193, 196);
+    background-color: rgb(33,37,41);
+    color: rgb(190, 193, 196);
+    border-radius: 5px;
+    width: 20%;
+    margin-top: 1%;
+    margin-bottom: 2%;
+}
+
+.scanningProps {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+}
+
+.scanbtn {
+    margin-top: 1%;
+}
+
+.adminCheck {
+    margin-left: 0.5rem;
+    margin-right: 2rem;
+}
+
+.threeColumns {
+    position: relative;
+    float: left;    
+    width: 33%;
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-top: 1%;
+    text-align: center;
+    padding-left: 1%;
+    padding-top: 1%;
+    margin-bottom: 1%;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.choosen {
+    color: rgb(121, 123, 124);
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.ipForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+}
+
+.ipbtn {
+    width: 6%;
+    margin-bottom: 2%;
+}
+
+.twoColumns {
+    position: relative;
+    float: left;    
+    width: 50%;
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-top: 1%;
+    text-align: left;
+    padding-left: 1%;
+    padding-top: 1%;
+    margin-bottom: 1%;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.usrbtn {
+    width: 10%;
+}
+
+.userbtn {
+    margin-right: 1%;
+}

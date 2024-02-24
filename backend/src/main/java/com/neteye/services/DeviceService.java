@@ -5,7 +5,7 @@ import com.neteye.persistence.entities.Device;
 import com.neteye.persistence.repositories.DeviceRepository;
 import com.neteye.persistence.repositories.DeviceSearchRepository;
 import com.neteye.utils.exceptions.NotFoundException;
-import com.neteye.utils.mappers.PortInfoMapper;
+import com.neteye.utils.mappers.DeviceMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,16 +32,7 @@ public class DeviceService {
             throw new NotFoundException("Device with this ip not found");
         }
 
-        DeviceDto deviceDto = new DeviceDto();
-
-        deviceDto.setIp(ip);
-        deviceDto.setPortInfo(PortInfoMapper.toDto(deviceInfo.get().getOpenedPorts()));
-        deviceDto.setTypeOfDevice(deviceInfo.get().getTypeOfDevice());
-        deviceDto.setHostname(deviceInfo.get().getHostname());
-        deviceDto.setLocation(deviceInfo.get().getLocation());
-        deviceDto.setSystem(deviceInfo.get().getSystem());
-
-        return deviceDto;
+        return DeviceMapper.toDto(deviceInfo.get());
     }
 
     public Page<Device> searchDevices(String criteria, Pageable pageable) {
