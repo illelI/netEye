@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface PortInfoRepository extends JpaRepository<PortInfo, PortInfoPrimaryKey> {
     List<PortInfo> findAllByPrimaryKeyIp(String ip);
+    void deleteAllByPrimaryKeyIp(String ip);
 }

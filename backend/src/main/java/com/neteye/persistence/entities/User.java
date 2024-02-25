@@ -7,9 +7,11 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -47,7 +49,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return switch (accountType) {
+            case USER -> Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+            case ADMIN -> Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        };
     }
 
     @Override

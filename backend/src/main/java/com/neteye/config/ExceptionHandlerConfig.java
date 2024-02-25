@@ -24,7 +24,7 @@ public class ExceptionHandlerConfig extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<Object> handleGenericException(GenericException ex, WebRequest request) {
-        logger.error(new ParameterizedMessage("GenericException occured; {}", ex.getMessage()));
+        logger.error(new ParameterizedMessage("GenericException occurred; {}", ex.getMessage()));
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), ex.getHttpStatus(), request);
     }
 
@@ -36,7 +36,7 @@ public class ExceptionHandlerConfig extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleOtherExceptions(RuntimeException ex, WebRequest request) {
-        logger.error("Exception occurred");
+        logger.error(ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }

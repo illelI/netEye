@@ -2,16 +2,16 @@ package com.neteye.controllers;
 
 import com.neteye.persistence.dto.DeviceDto;
 import com.neteye.persistence.entities.Device;
+import com.neteye.persistence.entities.IpBlackList;
+import com.neteye.persistence.repositories.IpBlackListRepository;
+import com.neteye.persistence.repositories.PortInfoRepository;
 import com.neteye.services.DeviceService;
 import com.neteye.utils.mappers.DeviceMapper;
 import com.neteye.utils.misc.SearchResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/device")
@@ -43,5 +43,6 @@ public class DeviceController {
         );
         return searchResult;
     }
+
 
 }

@@ -30,11 +30,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers( "/account/register", "/account/login", "/account/logout", "/api/v1/csrf", "/device/*").permitAll();
-                    auth.requestMatchers( "admin/*").permitAll();
-                    auth.requestMatchers("/device/*").permitAll();
-                    //auth.requestMatchers("/admin/*").hasRole("ADMIN");
-                    auth.requestMatchers("/account/*").authenticated();
+                    auth.requestMatchers("/account/getAccInfo", "/account/logout", "/account/delete", "/account/update").authenticated();
+                    auth.requestMatchers( "/account/register", "/account/login", "/device/find", "/device/getDeviceInfo").permitAll();
+                    auth.requestMatchers("/admin/*").hasRole("ADMIN");
                     auth.anyRequest().denyAll();
                 })
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()))
