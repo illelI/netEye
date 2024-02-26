@@ -37,7 +37,7 @@ public class DeviceSearcher {
     private int deviceResponseTimeout = 700;
     @Setter
     private int numberOfThreads = 10000;
-    private List<DefaultServerPortNumbers> portsToCheck = new ArrayList<>();
+    private final List<DefaultServerPortNumbers> portsToCheck = new ArrayList<>();
     @Setter
     private AtomicLong howManyIpsLeft;
 
@@ -65,14 +65,35 @@ public class DeviceSearcher {
 
         ipAddresses.add(firstAddressIp);
 
-        long loopCondition = IpAddress.calculateHowManyIpsAreInRange(new IpAddress(firstAddress), lastAddress);
+        long howManyIps = IpAddress.calculateHowManyIpsAreInRange(new IpAddress(firstAddress), lastAddress);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(numberOfThreads);
+        this.howManyIpsLeft = new AtomicLong(howManyIps);
 
+        for (int i = 0; i <= howManyIps/Math.pow(255,3); i++) {
+            howManyIps -= (long) Math.pow(255,3);
+            if (howManyIps < 0) {
+                howManyIps += (long) Math.pow(255,3);
+            }
+            firstAddressIp = startScanning(forkJoinPool, howManyIps, firstAddressIp, blacklist, ipAddresses);
+        }
+
+        forkJoinPool.close();
+
+        log.info("Scanning ended");
+
+    }
+
+    private IpAddress startScanning(ForkJoinPool forkJoinPool, long howMany, IpAddress firstAddressIp, List<String> blacklist, List<IpAddress> ipAddresses) throws InterruptedException {
+        long ipNumberInFirstOctet = (long) Math.pow(255, 3);
+        long loopCondition = Math.min(howMany, ipNumberInFirstOctet);
         for (long i = 1; i < loopCondition; i++) {
             IpAddress currentIpAddress = new IpAddress(firstAddressIp.increment().getAddress());
             for (RestrictedAddresses restrictedAddress : RestrictedAddresses.values()) {
                 if (currentIpAddress.ipInRange(restrictedAddress.getFirstAddress(), restrictedAddress.getLastAddress())) {
                     i += IpAddress.calculateHowManyIpsAreInRange(restrictedAddress.getFirstAddress(), restrictedAddress.getLastAddress());
-                    currentIpAddress = new IpAddress(restrictedAddress.getLastAddress().toString()).increment();
+                    firstAddressIp = new IpAddress(restrictedAddress.getLastAddress().toString()).increment();
+                    currentIpAddress = new IpAddress(firstAddressIp.increment().getAddress());
+                    break;
                 }
             }
             if (!blacklist.contains(currentIpAddress.toString())) {
@@ -80,20 +101,19 @@ public class DeviceSearcher {
             }
         }
 
-        this.howManyIpsLeft = new AtomicLong(ipAddresses.size());
+        long localLeft = howManyIpsLeft.get() - loopCondition;
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(numberOfThreads);
         forkJoinPool.submit(() -> ipAddresses.stream().parallel().forEach(this::checkIp));
 
-        while (howManyIpsLeft.get() > 0) {
+        while (howManyIpsLeft.get() > localLeft) {
             TimeUnit.SECONDS.sleep(10);
             log.info(howManyIpsLeft);
         }
-        forkJoinPool.close();
+        ipAddresses.clear();
 
-        log.info("Scanning ended");
-
+        return firstAddressIp;
     }
+
 
     private void setUp(Map<String, String> searchProperties) {
         portsToCheck.clear();
